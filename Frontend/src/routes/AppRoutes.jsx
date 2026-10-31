@@ -1,3 +1,4 @@
+
 import { Routes, Route, Link, Outlet, Navigate } from "react-router-dom";
 
 import Navbar from "../components/layout/Navbar.jsx";
@@ -19,11 +20,16 @@ import NewConsultation from "../pages/patient/NewConsultation.jsx";
 import DoctorDashboard from "../pages/DoctorDashboard.jsx";
 import Sidebar from "../components/patient/Sidebar.jsx";
 
+import LanguageSelection from "../pages/LanguageSelection.jsx";
+import PatientType from "../pages/PatientType.jsx";
+
 // 404 - Page Not Found
 function NotFound() {
   return (
     <main className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
-      <h1 className="font-serif text-5xl text-[#214A43]">404</h1>
+      <h1 className="font-serif text-5xl text-[#214A43]">
+        404
+      </h1>
 
       <p className="mt-3 text-[#52746D]">
         Sorry, this page could not be found.
@@ -56,7 +62,7 @@ export default function AppRoutes() {
   return (
     <div className="min-h-screen bg-[#FAF8F2]">
       <Routes>
-        {/* Public pages: navbar and footer */}
+        {/* Home page */}
         <Route
           path="/"
           element={
@@ -68,15 +74,22 @@ export default function AppRoutes() {
           }
         />
 
+        {/* Language selection */}
+        <Route
+          path="/language-selection"
+          element={<LanguageSelection />}
+        />
+
+        {/* New or returning patient */}
+        <Route
+          path="/patient-type"
+          element={<PatientType />}
+        />
+
+        {/* Signup: MediKioskHeader is inside Signup.jsx */}
         <Route
           path="/signup"
-          element={
-            <>
-              <Navbar />
-              <Signup />
-              <Footer />
-            </>
-          }
+          element={<Signup />}
         />
 
         <Route
@@ -84,40 +97,65 @@ export default function AppRoutes() {
           element={<Navigate to="/signup" replace />}
         />
 
+        {/* Login: MediKioskHeader is inside Login.jsx */}
         <Route
           path="/login"
-          element={
-            <>
-              <Navbar />
-              <Login />
-              <Footer />
-            </>
-          }
+          element={<Login />}
         />
 
         <Route
           path="/doctor/login"
-          element={
-            <>
-              <Navbar />
-              <Login />
-              <Footer />
-            </>
-          }
+          element={<Login />}
         />
 
-        {/* Patient pages: shared sidebar, no public navbar/footer */}
+        {/* Patient pages */}
         <Route path="/patient" element={<PatientLayout />}>
-          <Route index element={<Navigate to="/patient/dashboard" replace />} />
+          <Route
+            index
+            element={
+              <Navigate to="/patient/dashboard" replace />
+            }
+          />
 
-          <Route path="dashboard" element={<PatientDashboard />} />
-          <Route path="documents" element={<MyDocuments />} />
-          <Route path="history" element={<MedicalHistory />} />
-          <Route path="complaints" element={<MyComplaints />} />
-          <Route path="consultations" element={<MyConsultations />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="help" element={<Help />} />
-          <Route path="consultation/new" element={<NewConsultation />} />
+          <Route
+            path="dashboard"
+            element={<PatientDashboard />}
+          />
+
+          <Route
+            path="documents"
+            element={<MyDocuments />}
+          />
+
+          <Route
+            path="history"
+            element={<MedicalHistory />}
+          />
+
+          <Route
+            path="complaints"
+            element={<MyComplaints />}
+          />
+
+          <Route
+            path="consultations"
+            element={<MyConsultations />}
+          />
+
+          <Route
+            path="profile"
+            element={<Profile />}
+          />
+
+          <Route
+            path="help"
+            element={<Help />}
+          />
+
+          <Route
+            path="consultation/new"
+            element={<NewConsultation />}
+          />
         </Route>
 
         {/* Doctor dashboard */}
@@ -132,7 +170,7 @@ export default function AppRoutes() {
           }
         />
 
-        {/* 404 */}
+        {/* 404 page */}
         <Route
           path="*"
           element={

@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import ayushmanLogo from "../../assets/ayushman-logo.jpg";
 import {
   UserRound,
   ArrowRight,
@@ -38,7 +39,7 @@ export default function HeroSection() {
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
             <Link
-              to="/patient/register"
+              to="/language-selection"
               className="group inline-flex min-h-[58px] items-center justify-center gap-3 rounded-xl bg-[#47796F] px-7 py-4 font-semibold text-white shadow-lg shadow-[#47796F]/20 transition duration-300 hover:-translate-y-1 hover:bg-[#315E54] hover:shadow-xl"
             >
               <UserRound size={21} />
