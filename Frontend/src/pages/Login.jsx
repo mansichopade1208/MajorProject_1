@@ -84,10 +84,16 @@ const translations = {
   bn: {
     welcome: "আবার স্বাগতম",
     title: "আপনার স্বাস্থ্য, আপনার যাত্রা।",
-    description: "আপনার স্বাস্থ্যসেবার যাত্রা এখান থেকেই শুরু। আপনার MediKiosk অ্যাকাউন্টে প্রবেশ করুন।",
-    benefits: ["সহজে ব্যবহার করুন", "স্বাস্থ্যের তথ্য এক জায়গায়", "আরও সহজ চিকিৎসা পরামর্শ"],
+    description:
+      "আপনার স্বাস্থ্যসেবার যাত্রা এখান থেকেই শুরু। আপনার MediKiosk অ্যাকাউন্টে প্রবেশ করুন।",
+    benefits: [
+      "সহজে ব্যবহার করুন",
+      "স্বাস্থ্যের তথ্য এক জায়গায়",
+      "আরও সহজ চিকিৎসা পরামর্শ",
+    ],
     care: "আপনার যত্ন গুরুত্বপূর্ণ",
-    security: "আপনার নিবন্ধিত অ্যাকাউন্টের ইমেল ও পাসওয়ার্ড দিয়ে প্রবেশ করুন।",
+    security:
+      "আপনার নিবন্ধিত অ্যাকাউন্টের ইমেল ও পাসওয়ার্ড দিয়ে প্রবেশ করুন।",
     account: "আপনার অ্যাকাউন্ট",
     signIn: "সাইন ইন",
     formDescription: "চালিয়ে যেতে আপনার তথ্য দিন।",
@@ -111,10 +117,16 @@ const translations = {
   mr: {
     welcome: "पुन्हा स्वागत आहे",
     title: "तुमचे आरोग्य, तुमचा प्रवास.",
-    description: "तुमच्या आरोग्यसेवेचा प्रवास इथून सुरू होतो. तुमच्या MediKiosk खात्यात प्रवेश करा.",
-    benefits: ["वापरण्यास सोपे", "आरोग्याची माहिती एकाच ठिकाणी", "अधिक सोपा वैद्यकीय सल्ला"],
+    description:
+      "तुमच्या आरोग्यसेवेचा प्रवास इथून सुरू होतो. तुमच्या MediKiosk खात्यात प्रवेश करा.",
+    benefits: [
+      "वापरण्यास सोपे",
+      "आरोग्याची माहिती एकाच ठिकाणी",
+      "अधिक सोपा वैद्यकीय सल्ला",
+    ],
     care: "तुमची काळजी महत्त्वाची आहे",
-    security: "तुमच्या नोंदणीकृत खात्याचा ईमेल आणि पासवर्ड वापरा.",
+    security:
+      "तुमच्या नोंदणीकृत खात्याचा ईमेल आणि पासवर्ड वापरा.",
     account: "तुमचे खाते",
     signIn: "लॉग इन करा",
     formDescription: "पुढे जाण्यासाठी तुमची माहिती भरा.",
@@ -138,10 +150,16 @@ const translations = {
   te: {
     welcome: "మళ్లీ స్వాగతం",
     title: "మీ ఆరోగ్యం, మీ ప్రయాణం.",
-    description: "మీ ఆరోగ్య సంరక్షణ ప్రయాణం ఇక్కడ ప్రారంభమవుతుంది. మీ MediKiosk ఖాతాలోకి ప్రవేశించండి.",
-    benefits: ["ఉపయోగించడానికి సులభం", "ఆరోగ్య సమాచారం ఒకే చోట", "మెరుగైన వైద్య సంప్రదింపులు"],
+    description:
+      "మీ ఆరోగ్య సంరక్షణ ప్రయాణం ఇక్కడ ప్రారంభమవుతుంది. మీ MediKiosk ఖాతాలోకి ప్రవేశించండి.",
+    benefits: [
+      "ఉపయోగించడానికి సులభం",
+      "ఆరోగ్య సమాచారం ఒకే చోట",
+      "మెరుగైన వైద్య సంప్రదింపులు",
+    ],
     care: "మీ ఆరోగ్యం ముఖ్యం",
-    security: "మీ నమోదిత ఖాతా ఇమెయిల్, పాస్‌వర్డ్‌తో ప్రవేశించండి.",
+    security:
+      "మీ నమోదిత ఖాతా ఇమెయిల్, పాస్‌వర్డ్‌తో ప్రవేశించండి.",
     account: "మీ ఖాతా",
     signIn: "లాగిన్ చేయండి",
     formDescription: "కొనసాగించడానికి మీ వివరాలను నమోదు చేయండి.",
@@ -165,10 +183,16 @@ const translations = {
   ta: {
     welcome: "மீண்டும் வரவேற்கிறோம்",
     title: "உங்கள் ஆரோக்கியம், உங்கள் பயணம்.",
-    description: "உங்கள் சுகாதாரப் பயணம் இங்கே தொடங்குகிறது. உங்கள் MediKiosk கணக்கில் உள்நுழையுங்கள்.",
-    benefits: ["பயன்படுத்த எளிதானது", "உங்கள் மருத்துவத் தகவல்கள் ஒரே இடத்தில்", "சிறந்த மருத்துவ ஆலோசனை"],
+    description:
+      "உங்கள் சுகாதாரப் பயணம் இங்கே தொடங்குகிறது. உங்கள் MediKiosk கணக்கில் உள்நுழையுங்கள்.",
+    benefits: [
+      "பயன்படுத்த எளிதானது",
+      "உங்கள் மருத்துவத் தகவல்கள் ஒரே இடத்தில்",
+      "சிறந்த மருத்துவ ஆலோசனை",
+    ],
     care: "உங்கள் நலன் முக்கியம்",
-    security: "உங்கள் பதிவு செய்யப்பட்ட கணக்கின் மின்னஞ்சல் மற்றும் கடவுச்சொல்லைப் பயன்படுத்துங்கள்.",
+    security:
+      "உங்கள் பதிவு செய்யப்பட்ட கணக்கின் மின்னஞ்சல் மற்றும் கடவுச்சொல்லைப் பயன்படுத்துங்கள்.",
     account: "உங்கள் கணக்கு",
     signIn: "உள்நுழைக",
     formDescription: "தொடர உங்கள் விவரங்களை உள்ளிடுங்கள்.",
@@ -192,10 +216,16 @@ const translations = {
   gu: {
     welcome: "ફરીથી સ્વાગત છે",
     title: "તમારું સ્વાસ્થ્ય, તમારી સફર.",
-    description: "તમારી આરોગ્ય સંભાળની સફર અહીંથી શરૂ થાય છે. તમારા MediKiosk ખાતામાં પ્રવેશ કરો.",
-    benefits: ["વાપરવામાં સરળ", "આરોગ્યની માહિતી એક જ જગ્યાએ", "વધુ સારી તબીબી સલાહ"],
+    description:
+      "તમારી આરોગ્ય સંભાળની સફર અહીંથી શરૂ થાય છે. તમારા MediKiosk ખાતામાં પ્રવેશ કરો.",
+    benefits: [
+      "વાપરવામાં સરળ",
+      "આરોગ્યની માહિતી એક જ જગ્યાએ",
+      "વધુ સારી તબીબી સલાહ",
+    ],
     care: "તમારી સંભાળ મહત્વપૂર્ણ છે",
-    security: "તમારા નોંધાયેલા ખાતાના ઈમેલ અને પાસવર્ડથી પ્રવેશ કરો.",
+    security:
+      "તમારા નોંધાયેલા ખાતાના ઈમેલ અને પાસવર્ડથી પ્રવેશ કરો.",
     account: "તમારું ખાતું",
     signIn: "લૉગ ઇન કરો",
     formDescription: "આગળ વધવા માટે તમારી વિગતો દાખલ કરો.",
@@ -219,10 +249,16 @@ const translations = {
   kn: {
     welcome: "ಮತ್ತೆ ಸ್ವಾಗತ",
     title: "ನಿಮ್ಮ ಆರೋಗ್ಯ, ನಿಮ್ಮ ಪ್ರಯಾಣ.",
-    description: "ನಿಮ್ಮ ಆರೋಗ್ಯ ಸೇವೆಯ ಪ್ರಯಾಣ ಇಲ್ಲಿಂದ ಆರಂಭವಾಗುತ್ತದೆ. ನಿಮ್ಮ MediKiosk ಖಾತೆಗೆ ಪ್ರವೇಶಿಸಿ.",
-    benefits: ["ಬಳಸಲು ಸುಲಭ", "ಆರೋಗ್ಯ ಮಾಹಿತಿ ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ", "ಉತ್ತಮ ವೈದ್ಯಕೀಯ ಸಮಾಲೋಚನೆ"],
+    description:
+      "ನಿಮ್ಮ ಆರೋಗ್ಯ ಸೇವೆಯ ಪ್ರಯಾಣ ಇಲ್ಲಿಂದ ಆರಂಭವಾಗುತ್ತದೆ. ನಿಮ್ಮ MediKiosk ಖಾತೆಗೆ ಪ್ರವೇಶಿಸಿ.",
+    benefits: [
+      "ಬಳಸಲು ಸುಲಭ",
+      "ಆರೋಗ್ಯ ಮಾಹಿತಿ ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ",
+      "ಉತ್ತಮ ವೈದ್ಯಕೀಯ ಸಮಾಲೋಚನೆ",
+    ],
     care: "ನಿಮ್ಮ ಆರೈಕೆ ಮುಖ್ಯ",
-    security: "ನಿಮ್ಮ ನೋಂದಾಯಿತ ಖಾತೆಯ ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ.",
+    security:
+      "ನಿಮ್ಮ ನೋಂದಾಯಿತ ಖಾತೆಯ ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ.",
     account: "ನಿಮ್ಮ ಖಾತೆ",
     signIn: "ಲಾಗಿನ್ ಮಾಡಿ",
     formDescription: "ಮುಂದುವರಿಯಲು ನಿಮ್ಮ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ.",
@@ -246,10 +282,16 @@ const translations = {
   ml: {
     welcome: "വീണ്ടും സ്വാഗതം",
     title: "നിങ്ങളുടെ ആരോഗ്യം, നിങ്ങളുടെ യാത്ര.",
-    description: "നിങ്ങളുടെ ആരോഗ്യപരിചരണ യാത്ര ഇവിടെ തുടങ്ങുന്നു. നിങ്ങളുടെ MediKiosk അക്കൗണ്ടിൽ പ്രവേശിക്കുക.",
-    benefits: ["ഉപയോഗിക്കാൻ എളുപ്പം", "ആരോഗ്യവിവരങ്ങൾ ഒരിടത്ത്", "മെച്ചപ്പെട്ട മെഡിക്കൽ കൂടിയാലോചന"],
+    description:
+      "നിങ്ങളുടെ ആരോഗ്യപരിചരണ യാത്ര ഇവിടെ തുടങ്ങുന്നു. നിങ്ങളുടെ MediKiosk അക്കൗണ്ടിൽ പ്രവേശിക്കുക.",
+    benefits: [
+      "ഉപയോഗിക്കാൻ എളുപ്പം",
+      "ആരോഗ്യവിവരങ്ങൾ ഒരിടത്ത്",
+      "മെച്ചപ്പെട്ട മെഡിക്കൽ കൂടിയാലോചന",
+    ],
     care: "നിങ്ങളുടെ പരിചരണം പ്രധാനമാണ്",
-    security: "നിങ്ങളുടെ രജിസ്റ്റർ ചെയ്ത അക്കൗണ്ടിന്റെ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിക്കുക.",
+    security:
+      "നിങ്ങളുടെ രജിസ്റ്റർ ചെയ്ത അക്കൗണ്ടിന്റെ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിക്കുക.",
     account: "നിങ്ങളുടെ അക്കൗണ്ട്",
     signIn: "സൈൻ ഇൻ ചെയ്യുക",
     formDescription: "തുടരാൻ നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക.",
@@ -273,10 +315,16 @@ const translations = {
   pa: {
     welcome: "ਮੁੜ ਸੁਆਗਤ ਹੈ",
     title: "ਤੁਹਾਡੀ ਸਿਹਤ, ਤੁਹਾਡਾ ਸਫ਼ਰ।",
-    description: "ਤੁਹਾਡੀ ਸਿਹਤ ਸੰਭਾਲ ਦਾ ਸਫ਼ਰ ਇੱਥੋਂ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ। ਆਪਣੇ MediKiosk ਖਾਤੇ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ।",
-    benefits: ["ਵਰਤਣ ਵਿੱਚ ਆਸਾਨ", "ਸਿਹਤ ਦੀ ਜਾਣਕਾਰੀ ਇੱਕ ਥਾਂ", "ਬਿਹਤਰ ਡਾਕਟਰੀ ਸਲਾਹ"],
+    description:
+      "ਤੁਹਾਡੀ ਸਿਹਤ ਸੰਭਾਲ ਦਾ ਸਫ਼ਰ ਇੱਥੋਂ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ। ਆਪਣੇ MediKiosk ਖਾਤੇ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ।",
+    benefits: [
+      "ਵਰਤਣ ਵਿੱਚ ਆਸਾਨ",
+      "ਸਿਹਤ ਦੀ ਜਾਣਕਾਰੀ ਇੱਕ ਥਾਂ",
+      "ਬਿਹਤਰ ਡਾਕਟਰੀ ਸਲਾਹ",
+    ],
     care: "ਤੁਹਾਡੀ ਦੇਖਭਾਲ ਮਹੱਤਵਪੂਰਨ ਹੈ",
-    security: "ਆਪਣੇ ਰਜਿਸਟਰ ਕੀਤੇ ਖਾਤੇ ਦਾ ਈਮੇਲ ਅਤੇ ਪਾਸਵਰਡ ਵਰਤੋ।",
+    security:
+      "ਆਪਣੇ ਰਜਿਸਟਰ ਕੀਤੇ ਖਾਤੇ ਦਾ ਈਮੇਲ ਅਤੇ ਪਾਸਵਰਡ ਵਰਤੋ।",
     account: "ਤੁਹਾਡਾ ਖਾਤਾ",
     signIn: "ਲੌਗ ਇਨ ਕਰੋ",
     formDescription: "ਜਾਰੀ ਰੱਖਣ ਲਈ ਆਪਣੀ ਜਾਣਕਾਰੀ ਭਰੋ।",
@@ -376,17 +424,32 @@ export default function Login() {
         throw new Error(t.roleError);
       }
 
-      sessionStorage.setItem("medikioskUser", JSON.stringify(user));
+      // Make sure the backend returned a JWT token
+      if (!result.token) {
+        throw new Error("Authentication token was not received.");
+      }
 
-      if (user.role === "patient") {
-        navigate("/patient/dashboard", { replace: true });
-      } else if (user.role === "doctor") {
-        navigate("/doctor/dashboard", { replace: true });
-      } else {
-        sessionStorage.removeItem("medikioskUser");
+      // Validate the account role before saving the session
+      if (!["patient", "doctor"].includes(user.role)) {
         throw new Error(t.invalidRole);
       }
+
+      // Save user details and JWT token in session storage
+      sessionStorage.setItem("medikioskUser", JSON.stringify(user));
+      sessionStorage.setItem("medikioskToken", result.token);
+
+      // Redirect according to account role
+      if (user.role === "patient") {
+        navigate("/patient/dashboard", { replace: true });
+      } else {
+        navigate("/doctor/dashboard", { replace: true });
+      }
+
     } catch (error) {
+      // Clear session data if login fails
+      sessionStorage.removeItem("medikioskUser");
+      sessionStorage.removeItem("medikioskToken");
+
       setMessage(
         error instanceof TypeError
           ? t.server
@@ -402,176 +465,182 @@ export default function Login() {
       <div className="pointer-events-none absolute -left-32 top-20 h-80 w-80 rounded-full bg-[#DDEAE1]/70 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-10 h-80 w-80 rounded-full bg-[#F2E2D6]/60 blur-3xl" />
 
-     <div className="relative w-full">
-  <MediKioskHeader
-    selectedLanguage={selectedLanguage}
-    onLanguageChange={changeLanguage}
-  />
+      <div className="relative w-full">
+        <MediKioskHeader
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={changeLanguage}
+        />
 
-  <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+          <div className="mx-auto mt-8 grid max-w-5xl overflow-hidden rounded-3xl border border-[#E3E9E0] bg-white shadow-xl shadow-[#214A43]/5 lg:grid-cols-2">
 
-        <div className="mx-auto mt-8 grid max-w-5xl overflow-hidden rounded-3xl border border-[#E3E9E0] bg-white shadow-xl shadow-[#214A43]/5 lg:grid-cols-2">
-          {/* Welcome panel */}
-          <aside className="relative overflow-hidden bg-[#214A43] p-7 text-white sm:p-10 lg:p-12">
-            <div className="absolute -right-16 -top-16 h-60 w-60 rounded-full border border-white/10" />
-            <div className="absolute -right-8 -top-8 h-44 w-44 rounded-full border border-white/10" />
+            {/* Welcome panel */}
+            <aside className="relative overflow-hidden bg-[#214A43] p-7 text-white sm:p-10 lg:p-12">
+              <div className="absolute -right-16 -top-16 h-60 w-60 rounded-full border border-white/10" />
+              <div className="absolute -right-8 -top-8 h-44 w-44 rounded-full border border-white/10" />
 
-            <div className="relative">
-              <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
-                <HeartPulse size={32} />
-              </div>
+              <div className="relative">
+                <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
+                  <HeartPulse size={32} />
+                </div>
 
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[2px] text-[#B8D8C5]">
-                {t.welcome}
-              </p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[2px] text-[#B8D8C5]">
+                  {t.welcome}
+                </p>
 
-              <h1 className="font-serif text-4xl font-semibold leading-tight sm:text-5xl">
-                {t.title}
-              </h1>
+                <h1 className="font-serif text-4xl font-semibold leading-tight sm:text-5xl">
+                  {t.title}
+                </h1>
 
-              <p className="mt-5 max-w-sm text-sm leading-7 text-white/75 sm:text-base">
-                {t.description}
-              </p>
+                <p className="mt-5 max-w-sm text-sm leading-7 text-white/75 sm:text-base">
+                  {t.description}
+                </p>
 
-              <div className="mt-9 space-y-4">
-                {t.benefits.map((item) => (
-                  <div key={item} className="flex items-center gap-3">
-                    <CheckCircle2
-                      size={20}
-                      className="shrink-0 text-[#B8D8C5]"
-                    />
-                    <span className="text-sm text-white/90">{item}</span>
+                <div className="mt-9 space-y-4">
+                  {t.benefits.map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <CheckCircle2
+                        size={20}
+                        className="shrink-0 text-[#B8D8C5]"
+                      />
+                      <span className="text-sm text-white/90">
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-10 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.06] p-4">
+                  <ShieldCheck
+                    size={27}
+                    className="shrink-0 text-[#B8D8C5]"
+                  />
+
+                  <div>
+                    <p className="font-semibold">{t.care}</p>
+                    <p className="mt-1 text-xs leading-5 text-white/70">
+                      {t.security}
+                    </p>
                   </div>
-                ))}
+                </div>
+              </div>
+            </aside>
+
+            {/* Login form */}
+            <section className="p-6 sm:p-10 lg:p-12">
+              <div className="mb-7">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[2px] text-[#7CA49A]">
+                  {t.account}
+                </p>
+
+                <h2 className="text-3xl font-bold text-[#214A43]">
+                  {t.signIn}
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-[#789087]">
+                  {t.formDescription}
+                </p>
               </div>
 
-              <div className="mt-10 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.06] p-4">
-                <ShieldCheck
-                  size={27}
-                  className="shrink-0 text-[#B8D8C5]"
-                />
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="mb-2 block text-sm font-semibold text-[#315E54]"
+                  >
+                    {t.email}
+                  </label>
+
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder={t.emailPlaceholder}
+                    autoComplete="email"
+                    required
+                    className={inputClass}
+                  />
+                </div>
 
                 <div>
-                  <p className="font-semibold">{t.care}</p>
-                  <p className="mt-1 text-xs leading-5 text-white/70">
-                    {t.security}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Login form */}
-          <section className="p-6 sm:p-10 lg:p-12">
-            <div className="mb-7">
-              <p className="mb-2 text-xs font-bold uppercase tracking-[2px] text-[#7CA49A]">
-                {t.account}
-              </p>
-
-              <h2 className="text-3xl font-bold text-[#214A43]">
-                {t.signIn}
-              </h2>
-
-              <p className="mt-2 text-sm leading-6 text-[#789087]">
-                {t.formDescription}
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-sm font-semibold text-[#315E54]"
-                >
-                  {t.email}
-                </label>
-
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder={t.emailPlaceholder}
-                  autoComplete="email"
-                  required
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="mb-2 block text-sm font-semibold text-[#315E54]"
-                >
-                  {t.password}
-                </label>
-
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder={t.passwordPlaceholder}
-                    autoComplete="current-password"
-                    required
-                    className={`${inputClass} pr-12`}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((previous) => !previous)}
-                    aria-label={showPassword ? t.hidePassword : t.showPassword}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#789087] hover:text-[#214A43]"
+                  <label
+                    htmlFor="password"
+                    className="mb-2 block text-sm font-semibold text-[#315E54]"
                   >
-                    {showPassword ? (
-                      <EyeOff size={19} />
-                    ) : (
-                      <Eye size={19} />
-                    )}
-                  </button>
+                    {t.password}
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder={t.passwordPlaceholder}
+                      autoComplete="current-password"
+                      required
+                      className={`${inputClass} pr-12`}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowPassword((previous) => !previous)
+                      }
+                      aria-label={
+                        showPassword ? t.hidePassword : t.showPassword
+                      }
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#789087] hover:text-[#214A43]"
+                    >
+                      {showPassword ? (
+                        <EyeOff size={19} />
+                      ) : (
+                        <Eye size={19} />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {message && (
-                <div
-                  role="alert"
-                  className="rounded-xl bg-[#FBE9E5] p-3 text-sm leading-6 text-[#9D4337]"
-                >
-                  {message}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="group flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-[#47796F] px-6 py-4 font-semibold text-white shadow-lg shadow-[#47796F]/20 transition hover:-translate-y-0.5 hover:bg-[#315E54] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? t.signingIn : t.signIn}
-
-                {!loading && (
-                  <ArrowRight
-                    size={19}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
+                {message && (
+                  <div
+                    role="alert"
+                    className="rounded-xl bg-[#FBE9E5] p-3 text-sm leading-6 text-[#9D4337]"
+                  >
+                    {message}
+                  </div>
                 )}
-              </button>
 
-              <p className="pt-2 text-center text-sm text-[#789087]">
-                {t.noAccount}{" "}
-                <Link
-                  to="/signup"
-                  className="font-bold text-[#47796F] hover:text-[#214A43]"
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="group flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-[#47796F] px-6 py-4 font-semibold text-white shadow-lg shadow-[#47796F]/20 transition hover:-translate-y-0.5 hover:bg-[#315E54] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {t.createAccount}
-                </Link>
-              </p>
-            </form>
-          </section>
-        </div>
+                  {loading ? t.signingIn : t.signIn}
 
-        <p className="mt-6 text-center text-xs text-[#8AA097]">
-          © {new Date().getFullYear()} MediKiosk · {t.footer}
-        </p>
-      </div>
+                  {!loading && (
+                    <ArrowRight
+                      size={19}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
+                  )}
+                </button>
+
+                <p className="pt-2 text-center text-sm text-[#789087]">
+                  {t.noAccount}{" "}
+                  <Link
+                    to="/signup"
+                    className="font-bold text-[#47796F] hover:text-[#214A43]"
+                  >
+                    {t.createAccount}
+                  </Link>
+                </p>
+              </form>
+            </section>
+          </div>
+
+          <p className="mt-6 text-center text-xs text-[#8AA097]">
+            © {new Date().getFullYear()} MediKiosk · {t.footer}
+          </p>
+        </div>
       </div>
     </main>
   );

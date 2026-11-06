@@ -1,6 +1,7 @@
 
 import express from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 const router = express.Router();
@@ -148,7 +149,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate email and password only
+    // Validate email and password
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -193,10 +194,28 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Return the role saved in MongoDB
+    // Check JWT configuration
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is missing from environment variables.");
+    }
+
+    // Generate authentication token
+    const token = jwt.sign(
+      {
+        userId: user._id.toString(),
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+      }
+    );
+
+    // Return user details and authentication token
     return res.status(200).json({
       success: true,
       message: "Login successful!",
+      token,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -204,6 +223,7 @@ router.post("/login", async (req, res) => {
         role: user.role,
       },
     });
+
   } catch (error) {
     console.error("Login error:", error.message);
 
@@ -213,6 +233,5 @@ router.post("/login", async (req, res) => {
     });
   }
 });
-
 
 export default router;

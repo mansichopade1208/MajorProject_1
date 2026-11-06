@@ -2,10 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, ChevronDown, UserRound, X } from "lucide-react";
 
+import { getLoggedInUser, getUserInitials } from "../../utils/userSession";
+
 export default function DashboardHeader() {
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  const user = getLoggedInUser();
+
+  const patientName = user?.fullName || "Patient";
+  const patientEmail = user?.email || "Email unavailable";
+  const patientInitials = getUserInitials(patientName);
 
   const formattedDate = new Intl.DateTimeFormat("en-IN", {
     weekday: "long",
@@ -19,7 +27,7 @@ export default function DashboardHeader() {
       <div>
         <p className="text-sm text-[#64776F]">{formattedDate}</p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight text-[#214D43] sm:text-4xl">
-          Namaste, Rahul
+          Namaste, {patientName}
         </h1>
         <p className="mt-1 text-sm text-[#64776F] sm:text-base">
           Your personal health space
@@ -43,9 +51,7 @@ export default function DashboardHeader() {
           {notificationsOpen && (
             <div className="absolute right-0 top-12 z-30 w-72 rounded-xl border border-[#E3E7DF] bg-white p-4 shadow-lg">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-[#214D43]">
-                  Notifications
-                </h2>
+                <h2 className="font-semibold text-[#214D43]">Notifications</h2>
                 <button
                   onClick={() => setNotificationsOpen(false)}
                   aria-label="Close notifications"
@@ -54,8 +60,7 @@ export default function DashboardHeader() {
                 </button>
               </div>
               <p className="mt-3 text-sm text-gray-500">
-                You're all caught up. New consultation updates will appear
-                here.
+                You're all caught up. New consultation updates will appear here.
               </p>
             </div>
           )}
@@ -72,7 +77,7 @@ export default function DashboardHeader() {
             className="flex items-center gap-2 rounded-full hover:bg-[#E5EEE7]"
           >
             <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D5E4DA] bg-[#E4EEE6] text-sm font-semibold text-[#214D43]">
-              RK
+              {patientInitials}
             </span>
             <ChevronDown size={15} className="text-[#64776F]" />
           </button>
@@ -80,8 +85,9 @@ export default function DashboardHeader() {
           {profileOpen && (
             <div className="absolute right-0 top-12 z-30 w-48 rounded-xl border border-[#E3E7DF] bg-white p-2 shadow-lg">
               <div className="border-b border-gray-100 px-3 py-2">
-                <p className="font-semibold text-[#214D43]">Rahul Kumar</p>
-                <p className="text-xs text-gray-500">Patient account</p>
+                <p className="font-semibold text-[#214D43]">{patientName}</p>
+
+                <p className="text-xs text-gray-500">{patientEmail}</p>
               </div>
               <button
                 onClick={() => {

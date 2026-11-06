@@ -20,6 +20,9 @@ export async function submitConsultation({
     `${API_URL}/api/consultations/submit`,
     {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("medikioskToken")}`,
+      },
       body: formData,
     }
   );
