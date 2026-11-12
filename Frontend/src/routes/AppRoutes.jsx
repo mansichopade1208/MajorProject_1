@@ -8,6 +8,7 @@ import Home from "../pages/Home.jsx";
 import Signup from "../pages/Signup.jsx";
 import Login from "../pages/Login.jsx";
 
+//patient dashboard
 import PatientDashboard from "../pages/patient/PatientDashboard.jsx";
 import MyDocuments from "../pages/patient/MyDocuments.jsx";
 import MedicalHistory from "../pages/patient/MedicalHistory.jsx";
@@ -17,11 +18,13 @@ import Profile from "../pages/patient/Profile.jsx";
 import Help from "../pages/patient/Help.jsx";
 import NewConsultation from "../pages/patient/NewConsultation.jsx";
 
-import DoctorDashboard from "../pages/DoctorDashboard.jsx";
 import Sidebar from "../components/patient/Sidebar.jsx";
 
 import LanguageSelection from "../pages/LanguageSelection.jsx";
 import PatientType from "../pages/PatientType.jsx";
+
+//doctor dashboard
+import DoctorDashboard from "../pages/doctor/DoctorDashboard.jsx";
 
 // 404 - Page Not Found
 function NotFound() {
@@ -163,9 +166,9 @@ export default function AppRoutes() {
           path="/doctor/dashboard"
           element={
             <>
-              <Navbar />
+              
               <DoctorDashboard />
-              <Footer />
+              
             </>
           }
         />
