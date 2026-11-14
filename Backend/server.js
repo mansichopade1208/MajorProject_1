@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -6,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import healthInterviewRoutes from "./routes/healthInterviewRoutes.js";
 import consultationRoutes from "./routes/consultationRoutes.js";
+import medicalDocumentRoutes from "./routes/medicalDocumentRoutes.js";
 
 dotenv.config();
 
@@ -23,6 +23,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/health-interview", healthInterviewRoutes);
 app.use("/api/consultations", consultationRoutes);
+app.use("/api/documents", medicalDocumentRoutes);
+
 // Homepage test route
 app.get("/", (req, res) => {
   res.json({
