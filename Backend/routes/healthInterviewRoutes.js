@@ -42,6 +42,8 @@ router.post("/next", async (req, res) => {
         data: {
           status: "continue",
           nextQuestion: result.question,
+          inputType: result.inputType,
+          options: result.options || [],
         },
       });
     }
@@ -60,16 +62,13 @@ router.post("/next", async (req, res) => {
       success: false,
       message: "Unexpected AI response.",
     });
-  } 
-catch (error) {
-  console.error("Health interview AI request failed:", error);
+  } catch (error) {
+    console.error("Health interview AI request failed:", error);
 
-  return res.status(502).json({
-    success: false,
-    message: "Unable to process the interview. Please try again.",
-  });
-
-
+    return res.status(502).json({
+      success: false,
+      message: "Unable to process the interview. Please try again.",
+    });
   }
 });
 

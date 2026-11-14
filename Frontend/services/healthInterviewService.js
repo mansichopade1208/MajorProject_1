@@ -17,17 +17,22 @@ export async function getNextQuestion(initialComplaint, messages) {
     }
   );
 
-  const result = await response.json();
+  const responseBody = await response.json();
+
+  console.log("FRONTEND API RESPONSE:", responseBody);
 
   if (!response.ok) {
     throw new Error(
-      result.message || "Unable to process the interview."
+      responseBody.message || "Unable to process the interview."
     );
   }
 
-  if (!result.success || !result.data?.status) {
-    throw new Error("Invalid response received from the server.");
+  // Support both response formats
+  const result = responseBody.data ?? responseBody;
+
+  if (!result || typeof result !== "object") {
+    throw new Error("Invalid AI response received.");
   }
 
-  return result.data;
+  return result;
 }
