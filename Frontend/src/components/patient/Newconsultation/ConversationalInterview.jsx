@@ -46,7 +46,7 @@ export default function ConversationalInterview({ onComplete }) {
     };
   }, []);
 
-  // Scroll to latest message
+  // Scroll to latest question
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -109,7 +109,7 @@ export default function ConversationalInterview({ onComplete }) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Automatically speak every new AI question
+  // Automatically speak new AI questions
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
 
@@ -160,7 +160,11 @@ export default function ConversationalInterview({ onComplete }) {
         transcript += event.results[i][0].transcript;
       }
 
-      setAnswer(transcript);
+      setAnswer((previous) =>
+        previous.startsWith("Other:")
+          ? `Other: ${transcript}`
+          : transcript
+      );
     };
 
     recognition.onerror = (event) => {
@@ -206,7 +210,7 @@ export default function ConversationalInterview({ onComplete }) {
     }
   }
 
-  // Replay last AI question
+  // Replay current question
   function replayQuestion() {
     const lastMessage = [...messages]
       .reverse()
@@ -221,27 +225,58 @@ export default function ConversationalInterview({ onComplete }) {
     }
   }
 
-  // Submit answer to AI backend
-  async function handleSend(event, selectedAnswer) {
+  // Submit answer to backend
+  async function handleSend(event) {
     event?.preventDefault();
 
-    const text = (
-      selectedAnswer !== undefined ? selectedAnswer : answer
-    ).trim();
+    if (loading) return;
 
-    if (!text || loading) return;
+    const currentQuestion = [...messages]
+      .reverse()
+      .find((message) => message.role === "assistant");
+
+    const typedAnswer = answer.trim();
+
+    let finalAnswer = "";
+
+    if (selectedOptions.length > 0) {
+      const options = selectedOptions.filter(
+        (option) => option !== "Other"
+      );
+
+      if (selectedOptions.includes("Other")) {
+        const customAnswer = typedAnswer.replace(/^Other:\s*/i, "").trim();
+
+        if (!customAnswer) {
+          inputRef.current?.focus();
+          return;
+        }
+
+        options.push(`Other: ${customAnswer}`);
+      }
+
+      if (typedAnswer && !selectedOptions.includes("Other")) {
+        options.push(typedAnswer);
+      }
+
+      finalAnswer = options.join(", ");
+    } else {
+      finalAnswer = typedAnswer;
+    }
+
+    if (!finalAnswer) return;
 
     recognitionRef.current?.stop();
     window.speechSynthesis?.cancel();
 
-    const complaint = initialComplaint || text;
+    const complaint = initialComplaint || finalAnswer;
 
     const updatedMessages = [
       ...messages,
       {
         id: Date.now(),
         role: "user",
-        content: text,
+        content: finalAnswer,
       },
     ];
 
@@ -252,7 +287,7 @@ export default function ConversationalInterview({ onComplete }) {
     setLoading(true);
 
     if (!initialComplaint) {
-      setInitialComplaint(text);
+      setInitialComplaint(finalAnswer);
     }
 
     try {
@@ -266,7 +301,6 @@ export default function ConversationalInterview({ onComplete }) {
 
       console.log("AI API RESPONSE:", result);
 
-      // Support direct and wrapped responses
       const resultData = result?.data ?? result;
 
       if (resultData.status === "continue") {
@@ -277,11 +311,7 @@ export default function ConversationalInterview({ onComplete }) {
           typeof nextQuestion !== "string" ||
           !nextQuestion.trim()
         ) {
-          console.error("Question missing:", resultData);
-
-          throw new Error(
-            "AI question is missing from the response."
-          );
+          throw new Error("AI question is missing from the response.");
         }
 
         const allowedInputTypes = [
@@ -309,7 +339,7 @@ export default function ConversationalInterview({ onComplete }) {
           {
             id: Date.now() + 1,
             role: "assistant",
-            content: nextQuestion,
+            content: nextQuestion.trim(),
             inputType,
             options,
           },
@@ -320,11 +350,7 @@ export default function ConversationalInterview({ onComplete }) {
       ) {
         onComplete?.(resultData.summary);
       } else {
-        console.error("Unexpected AI response:", resultData);
-
-        throw new Error(
-          "Unexpected response received from the AI."
-        );
+        throw new Error("Unexpected response received from the AI.");
       }
     } catch (error) {
       console.error("Interview error:", error);
@@ -337,6 +363,8 @@ export default function ConversationalInterview({ onComplete }) {
           content:
             error.message ||
             "Sorry, I couldn't process your response. Please try again.",
+          inputType: "free_text",
+          options: [],
         },
       ]);
     } finally {
@@ -345,34 +373,32 @@ export default function ConversationalInterview({ onComplete }) {
     }
   }
 
-  // Handle AI-generated touch options
+  // Handle option selection
   function handleOptionClick(option, inputType) {
     if (loading) return;
 
-    // Other option
     if (option === "Other") {
-      setAnswer((previous) =>
-        previous.startsWith("Other:") ? previous : "Other: "
-      );
-
-      if (inputType === "multi_select") {
-        setSelectedOptions((previous) =>
-          previous.includes("Other")
-            ? previous
-            : [
+      setSelectedOptions((previous) =>
+        previous.includes("Other")
+          ? previous.filter((item) => item !== "Other")
+          : inputType === "multi_select"
+            ? [
                 ...previous.filter(
                   (item) => item !== "None of these"
                 ),
                 "Other",
               ]
-        );
-      }
+            : ["Other"]
+      );
+
+      setAnswer((previous) =>
+        previous.startsWith("Other:") ? previous : "Other: "
+      );
 
       inputRef.current?.focus();
       return;
     }
 
-    // Multi-select
     if (inputType === "multi_select") {
       setSelectedOptions((previous) => {
         if (option === "None of these") {
@@ -391,45 +417,27 @@ export default function ConversationalInterview({ onComplete }) {
       return;
     }
 
-    // Single-select and yes/no
-    handleSend(null, option);
-  }
-
-  // Submit multi-select answers
-  function submitSelectedOptions() {
-    if (!selectedOptions.length || loading) return;
-
-    const customAnswer = answer.trim();
-
-    if (
-      selectedOptions.includes("Other") &&
-      (!customAnswer || customAnswer === "Other:")
-    ) {
-      inputRef.current?.focus();
-      return;
-    }
-
-    const finalOptions = selectedOptions.filter(
-      (option) => option !== "Other"
+    // Single-select: select first, submit using Send button
+    setSelectedOptions((previous) =>
+      previous.includes(option) ? [] : [option]
     );
-
-    if (selectedOptions.includes("Other")) {
-      finalOptions.push(customAnswer);
-    } else if (customAnswer) {
-      finalOptions.push(customAnswer);
-    }
-
-    handleSend(null, finalOptions.join(", "));
   }
 
-  // Latest assistant message
-  const lastAssistantMessage = [...messages]
+  // Latest AI question only
+  const currentQuestion = [...messages]
     .reverse()
     .find((message) => message.role === "assistant");
 
+  const questionNumber = messages.filter(
+    (message) => message.role === "assistant"
+  ).length;
+
+  const isMultiSelect =
+    currentQuestion?.inputType === "multi_select";
+
   return (
     <section className="overflow-hidden">
-      {/* Header */}
+      {/* Header - unchanged */}
       <div className="flex items-center justify-between border-b border-[#EDF0EA] px-5 py-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E0EEE7] text-[#47796E]">
@@ -479,32 +487,29 @@ export default function ConversationalInterview({ onComplete }) {
         </div>
       </div>
 
-      {/* Conversation */}
-      <div className="min-h-[180px] max-h-[420px] overflow-y-auto px-4 py-6 sm:px-6">
-        {!started && (
-          <div className="flex flex-col items-center justify-center py-6 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#E0EEE7] text-[#47796E]">
+      {/* Assessment area */}
+      <div className="min-h-[300px] px-4 py-8 sm:px-8">
+        {!started ? (
+          <div className="flex min-h-[280px] flex-col items-center justify-center text-center">
+            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#E0EEE7] text-[#47796E]">
               <Sparkles size={28} />
             </div>
 
-            <h4 className="text-base font-semibold text-[#214D43]">
+            <h4 className="text-lg font-semibold text-[#214D43]">
               Welcome to Mediokiosk
             </h4>
 
-            <p className="mt-2 max-w-md text-sm leading-6 text-gray-500">
+            <p className="mt-3 max-w-md text-sm leading-6 text-gray-500">
               Please describe what has been bothering you.
-              You can type your symptoms or use the microphone
-              to speak. I'll ask a few relevant questions to
-              understand your concern better.
+              You can type your symptoms or use the microphone.
+              I'll ask relevant questions to understand your concern.
             </p>
 
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-xs text-[#47796E]">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs text-[#47796E]">
               <span className="flex items-center gap-1.5">
                 <Mic size={15} />
                 Speak your symptoms
               </span>
-
-              <span className="text-gray-300">|</span>
 
               <span className="flex items-center gap-1.5">
                 <Send size={14} />
@@ -512,148 +517,93 @@ export default function ConversationalInterview({ onComplete }) {
               </span>
             </div>
           </div>
-        )}
+        ) : (
+          <div className="mx-auto flex min-h-[280px] max-w-2xl flex-col justify-center">
+  {currentQuestion ? (
+    <>
+      {/* Left-aligned question */}
+      <div className="text-left">
+        <h4 className="text-xl font-semibold leading-8 text-[#214D43] sm:text-2xl">
+          {currentQuestion.content}
+        </h4>
 
-        <div className="space-y-6">
-          {messages.map((message) => {
-            const isAI = message.role === "assistant";
+        <button
+          type="button"
+          onClick={() => speakAI(currentQuestion.content)}
+          className="mt-3 flex items-center gap-1.5 text-xs font-medium text-[#47796E] hover:underline"
+        >
+          <Volume2 size={14} />
+          Listen again
+        </button>
+      </div>
 
-            const isLastAssistant =
-              isAI &&
-              message.id === lastAssistantMessage?.id;
+      {/* Quiz-style options */}
+      {currentQuestion.options?.length > 0 && (
+        <div className="mt-8 w-full">
+          <div className="mb-3 text-left text-xs font-medium text-gray-500">
+            {isMultiSelect
+              ? "Select all applicable answers"
+              : "Select one answer"}
+          </div>
 
-            return (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${
-                  isAI ? "justify-start" : "justify-end"
-                }`}
-              >
-                {isAI && (
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#E0EEE7] text-[#47796E]">
-                    <Bot size={17} />
-                  </div>
-                )}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {currentQuestion.options.map((option, index) => {
+              const isSelected = selectedOptions.includes(option);
 
-                <div className="max-w-[90%]">
-                  {/* Message bubble */}
-                  <div
-                    className={`whitespace-pre-wrap text-sm leading-7 ${
-                      isAI
-                        ? "pt-0.5 text-gray-700"
-                        : "rounded-2xl rounded-br-md bg-[#326F61] px-4 py-3 text-white"
+              return (
+                <button
+                  key={`${option}-${index}`}
+                  type="button"
+                  disabled={loading}
+                  onClick={() =>
+                    handleOptionClick(
+                      option,
+                      currentQuestion.inputType
+                    )
+                  }
+                  className={`flex min-h-[52px] items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-all disabled:opacity-50 ${
+                    isSelected
+                      ? "border-[#326F61] bg-[#E1EFE7] text-[#285C50] shadow-sm"
+                      : "border-[#DDE5DF] bg-[#F3F7F3] text-gray-700 hover:border-[#789F8D] hover:bg-[#EAF2EC]"
+                  }`}
+                >
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-xs font-semibold ${
+                      isSelected
+                        ? "border-[#326F61] bg-[#326F61] text-white"
+                        : "border-[#C9D5CC] bg-white text-gray-500"
                     }`}
                   >
-                    {message.content}
-
-                    {/* Listen again */}
-                    {isAI && message.content && (
-                      <button
-                        type="button"
-                        onClick={() => speakAI(message.content)}
-                        className="mt-2 flex items-center gap-1 text-xs text-[#47796E] hover:underline"
-                      >
-                        <Volume2 size={14} />
-                        Listen again
-                      </button>
+                    {isSelected ? (
+                      <Check size={14} />
+                    ) : (
+                      String.fromCharCode(65 + index)
                     )}
-                  </div>
+                  </span>
 
-                  {/* Dynamic AI-generated options */}
-                  {isLastAssistant &&
-                    message.options?.length > 0 && (
-                      <div className="mt-4">
-                        <div className="mb-3 flex items-center gap-2 text-xs font-medium text-gray-500">
-                          <Sparkles
-                            size={14}
-                            className="text-[#47796E]"
-                          />
-
-                          {message.inputType === "multi_select"
-                            ? "Select all that apply"
-                            : "Choose an option"}
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {message.options.map((option) => {
-                            const isSelected =
-                              selectedOptions.includes(option);
-
-                            return (
-                              <button
-                                key={option}
-                                type="button"
-                                disabled={loading}
-                                onClick={() =>
-                                  handleOptionClick(
-                                    option,
-                                    message.inputType
-                                  )
-                                }
-                                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                                  isSelected
-                                    ? "border-[#326F61] bg-[#EAF3ED] text-[#285C50]"
-                                    : "border-[#DDE8DF] bg-[#FCFDFB] text-[#326F61] hover:border-[#326F61] hover:bg-[#EAF3ED]"
-                                }`}
-                              >
-                                {message.inputType ===
-                                  "multi_select" && (
-                                  <span
-                                    className={`flex h-4 w-4 items-center justify-center rounded border ${
-                                      isSelected
-                                        ? "border-[#326F61] bg-[#326F61] text-white"
-                                        : "border-[#B8C9BC]"
-                                    }`}
-                                  >
-                                    {isSelected && (
-                                      <Check size={11} />
-                                    )}
-                                  </span>
-                                )}
-
-                                {option}
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        {/* Multi-select submit */}
-                        {message.inputType === "multi_select" && (
-                          <button
-                            type="button"
-                            onClick={submitSelectedOptions}
-                            disabled={
-                              !selectedOptions.length ||
-                              loading ||
-                              (selectedOptions.includes("Other") &&
-                                (!answer.trim() ||
-                                  answer.trim() === "Other:"))
-                            }
-                            className="mt-3 rounded-lg bg-[#326F61] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#285C50] disabled:cursor-not-allowed disabled:bg-[#DCE5DC] disabled:text-gray-400"
-                          >
-                            Submit selected answers
-                          </button>
-                        )}
-                      </div>
-                    )}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Loading indicator */}
-          {loading && (
-            <div className="flex items-center gap-3 text-sm text-gray-500">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E0EEE7] text-[#47796E]">
-                <Bot size={17} />
-              </div>
-
-              <span className="animate-pulse">
-                Thinking...
-              </span>
-            </div>
-          )}
+                  <span className="flex-1">{option}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+      )}
+    </>
+  ) : (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#DDE8DF] border-t-[#326F61]" />
+    </div>
+  )}
+</div>
+        )}
+
+        {/* Loading indicator */}
+        {loading && (
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-[#47796E]">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#DDE8DF] border-t-[#326F61]" />
+            Processing your response...
+          </div>
+        )}
 
         <div ref={bottomRef} />
       </div>
@@ -666,79 +616,86 @@ export default function ConversationalInterview({ onComplete }) {
         </div>
       )}
 
-      {/* Composer */}
-      <div className="px-4 pb-4 sm:px-6 sm:pb-5">
+      {/* Composer - always visible */}
+      <div className="border-t border-[#EDF0EA] px-4 py-5 sm:px-6">
         <form
           onSubmit={handleSend}
-          className="flex items-end gap-2 rounded-2xl border border-[#DDE4DB] bg-[#FCFDFB] p-3 transition focus-within:border-[#9BBCAF] focus-within:shadow-sm"
+          className="mx-auto max-w-2xl"
         >
-          {/* Microphone */}
-          <button
-            type="button"
-            onClick={startListening}
-            disabled={!voiceSupported || loading}
-            aria-label={
-              listening ? "Stop recording" : "Speak answer"
-            }
-            title={
-              voiceSupported
-                ? "Speak your answer"
-                : "Voice recognition unavailable"
-            }
-            className={`mb-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
-              listening
-                ? "bg-red-500 text-white"
-                : "bg-[#E0EEE7] text-[#326F61] hover:bg-[#D3E7D9]"
-            } disabled:cursor-not-allowed disabled:opacity-40`}
-          >
-            {listening ? (
-              <MicOff size={18} />
-            ) : (
-              <Mic size={18} />
-            )}
-          </button>
+         
 
-          {/* Text input */}
-          <textarea
-            ref={inputRef}
-            value={answer}
-            onChange={(event) => setAnswer(event.target.value)}
-            onKeyDown={(event) => {
-              if (
-                event.key === "Enter" &&
-                !event.shiftKey &&
-                !event.nativeEvent.isComposing
-              ) {
-                event.preventDefault();
-                event.currentTarget.form?.requestSubmit();
+          <div className="flex items-end gap-2 rounded-2xl border border-[#DDE4DB] bg-[#FCFDFB] p-3 transition focus-within:border-[#9BBCAF] focus-within:shadow-sm">
+            {/* Microphone */}
+            <button
+              type="button"
+              onClick={startListening}
+              disabled={!voiceSupported || loading}
+              aria-label={
+                listening ? "Stop recording" : "Speak answer"
               }
-            }}
-            placeholder={
-              listening
-                ? "Listening to your answer..."
-                : !started
-                  ? "Describe what has been bothering you..."
-                  : "Type or speak your answer..."
-            }
-            rows={1}
-            maxLength={2000}
-            className="min-h-[40px] max-h-32 min-w-0 flex-1 resize-y bg-transparent px-1 py-2 text-sm leading-6 text-gray-700 outline-none placeholder:text-gray-400"
-          />
+              title={
+                voiceSupported
+                  ? "Speak your answer"
+                  : "Voice recognition unavailable"
+              }
+              className={`mb-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
+                listening
+                  ? "bg-red-500 text-white"
+                  : "bg-[#E0EEE7] text-[#326F61] hover:bg-[#D3E7D9]"
+              } disabled:cursor-not-allowed disabled:opacity-40`}
+            >
+              {listening ? (
+                <MicOff size={18} />
+              ) : (
+                <Mic size={18} />
+              )}
+            </button>
 
-          {/* Send */}
-          <button
-            type="submit"
-            disabled={!answer.trim() || loading}
-            aria-label="Send message"
-            className="mb-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#326F61] text-white transition hover:bg-[#285C50] disabled:cursor-not-allowed disabled:bg-[#DCE5DC] disabled:text-gray-400"
-          >
-            <Send size={17} />
-          </button>
+            {/* Text input - always available */}
+            <textarea
+              ref={inputRef}
+              value={answer}
+              onChange={(event) => setAnswer(event.target.value)}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
+              placeholder={
+                listening
+                  ? "Listening to your answer..."
+                  : !started
+                    ? "Describe what has been bothering you..."
+                    : "Type or speak your answer..."
+              }
+              rows={1}
+              maxLength={2000}
+              className="min-h-[40px] max-h-32 min-w-0 flex-1 resize-y bg-transparent px-1 py-2 text-sm leading-6 text-gray-700 outline-none placeholder:text-gray-400"
+            />
+
+            {/* Send */}
+            <button
+              type="submit"
+              disabled={
+                loading ||
+                (!answer.trim() && selectedOptions.length === 0)
+              }
+              aria-label="Submit answer"
+              className="mb-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#326F61] text-white transition hover:bg-[#285C50] disabled:cursor-not-allowed disabled:bg-[#DCE5DC] disabled:text-gray-400"
+            >
+              <Send size={17} />
+            </button>
+          </div>
         </form>
 
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mx-auto mt-3 flex max-w-2xl items-center justify-between">
           <p className="text-xs text-gray-400">
-            You can type or speak your response
+            You can type, speak or select an answer
           </p>
 
           <button

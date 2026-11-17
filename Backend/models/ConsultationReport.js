@@ -10,9 +10,8 @@ const consultationReportSchema = new mongoose.Schema(
     },
 
     finalReport: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       required: true,
-      trim: true,
     },
   },
   { timestamps: true }

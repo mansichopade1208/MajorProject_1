@@ -1,10 +1,86 @@
-
-import { useState } from "react";
-import { Send, ClipboardList, Pencil } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import {
+  Send,
+  ClipboardList,
+  Pencil,
+  Volume2,
+  Mic,
+  MicOff,
+} from "lucide-react";
 
 export default function MedicalHistory({ onComplete }) {
   const [history, setHistory] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [listening, setListening] = useState(false);
+
+  const recognitionRef = useRef(null);
+
+  const prompt =
+    "Please provide information about your medical history or any allergies you may have.";
+
+  function speakPrompt() {
+    if (!("speechSynthesis" in window)) return;
+
+    window.speechSynthesis.cancel();
+
+    const message = new SpeechSynthesisUtterance(prompt);
+    message.lang = "en-IN";
+    message.rate = 0.95;
+
+    window.speechSynthesis.speak(message);
+  }
+
+  useEffect(() => {
+    speakPrompt();
+
+    return () => {
+      window.speechSynthesis?.cancel();
+      recognitionRef.current?.stop();
+    };
+  }, []);
+
+  function toggleListening() {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-IN";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript + " ";
+      }
+
+      setHistory(transcript.trim());
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+
+    recognition.onerror = () => {
+      setListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setListening(true);
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -12,6 +88,7 @@ export default function MedicalHistory({ onComplete }) {
     const text = history.trim();
     if (!text) return;
 
+    recognitionRef.current?.stop();
     onComplete(text);
     setHistory(text);
     setSubmitted(true);
@@ -30,10 +107,10 @@ export default function MedicalHistory({ onComplete }) {
 
         <div>
           <h2 className="font-semibold text-[#214D43]">
-            Your medical history
+            Medical history
           </h2>
           <p className="text-sm text-gray-500">
-            Share your past illnesses, allergies and medications.
+            For example: I have diabetes, I am allergic to penicillin, and I currently take...
           </p>
         </div>
       </div>
@@ -61,18 +138,30 @@ export default function MedicalHistory({ onComplete }) {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="mt-5">
-          <label
-            htmlFor="medical-history"
-            className="mb-2 block text-sm font-medium text-[#315F53]"
-          >
-            Medical history, allergies and medications
-          </label>
+          <div className="mb-3 flex flex-wrap items-center gap-4">
+            <button
+              type="button"
+              onClick={speakPrompt}
+              className="inline-flex items-center gap-2 text-sm font-medium text-[#47796E] hover:underline"
+            >
+              <Volume2 size={16} />
+              Listen again
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleListening}
+              className="inline-flex items-center gap-2 text-sm font-medium text-[#47796E] hover:underline"
+            >
+              {listening ? <MicOff size={16} /> : <Mic size={16} />}
+              {listening ? "Stop speaking" : "Speak"}
+            </button>
+          </div>
 
           <textarea
             id="medical-history"
             value={history}
             onChange={(event) => setHistory(event.target.value)}
-            placeholder="For example: I have diabetes, I am allergic to penicillin, and I currently take..."
             rows={5}
             maxLength={5000}
             required
