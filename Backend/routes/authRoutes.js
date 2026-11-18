@@ -114,11 +114,32 @@ router.post("/signup", async (req, res) => {
     }
 
     // Save user in database
+
+    // Save user in database
     const user = await User.create(userData);
 
+    // Check JWT configuration
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is missing from environment variables.");
+    }
+
+    // Generate authentication token
+    const token = jwt.sign(
+      {
+        userId: user._id.toString(),
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+      }
+    );
+
+    // Return user details and authentication token
     return res.status(201).json({
       success: true,
       message: "Registration successful!",
+      token,
       user: {
         id: user._id,
         fullName: user.fullName,

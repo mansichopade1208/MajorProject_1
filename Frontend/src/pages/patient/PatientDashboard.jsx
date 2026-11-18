@@ -29,10 +29,10 @@ export default function PatientDashboard() {
         </div>
       </section>
 
-      <section className="mb-8 grid grid-cols-1 items-stretch gap-5 xl:grid-cols-2">
+      {/* <section className="mb-8 grid grid-cols-1 items-stretch gap-5 xl:grid-cols-2">
         <RecentActivity activities={recentActivities} />
         <HealthSummary />
-      </section>
+      </section> */}
 
       <SecurityNotice />
     </div>

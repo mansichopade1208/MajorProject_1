@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   ArrowLeft,
@@ -13,6 +12,7 @@ import {
   ShieldAlert,
   CheckCircle2,
   Stethoscope,
+  KeyRound,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -22,8 +22,7 @@ import MedicalDocumentUpload from "../../components/patient/Newconsultation/Medi
 import ConsultationReview from "../../components/patient/Newconsultation/ConsultationReview.jsx";
 import { submitConsultation } from "../../../services/consultationService.js";
 
-const SECTION_STYLE =
-  "rounded-xl border border-[#E2E8ED] bg-white p-5";
+const SECTION_STYLE = "rounded-xl border border-[#E2E8ED] bg-white p-5";
 
 function SectionHeading({ icon: Icon, title, subtitle }) {
   return (
@@ -38,9 +37,7 @@ function SectionHeading({ icon: Icon, title, subtitle }) {
         </h3>
 
         {subtitle && (
-          <p className="mt-0.5 text-xs text-[#718096]">
-            {subtitle}
-          </p>
+          <p className="mt-0.5 text-xs text-[#718096]">{subtitle}</p>
         )}
       </div>
     </div>
@@ -48,41 +45,20 @@ function SectionHeading({ icon: Icon, title, subtitle }) {
 }
 
 function EmptyValue({ value }) {
-  if (
-    !value ||
-    value === "Not provided" ||
-    value === "Not available"
-  ) {
-    return (
-      <span className="text-sm italic text-[#8995A3]">
-        Not provided
-      </span>
-    );
+  if (!value || value === "Not provided" || value === "Not available") {
+    return <span className="text-sm italic text-[#8995A3]">Not provided</span>;
   }
 
-  return (
-    <span className="text-sm text-[#334155]">
-      {value}
-    </span>
-  );
+  return <span className="text-sm text-[#334155]">{value}</span>;
 }
 
 function TagList({ items, emptyText = "Not provided" }) {
   const validItems = Array.isArray(items)
-    ? items.filter(
-        (item) =>
-          item &&
-          typeof item === "string" &&
-          item.trim()
-      )
+    ? items.filter((item) => item && typeof item === "string" && item.trim())
     : [];
 
   if (!validItems.length) {
-    return (
-      <p className="text-sm italic text-[#8995A3]">
-        {emptyText}
-      </p>
-    );
+    return <p className="text-sm italic text-[#8995A3]">{emptyText}</p>;
   }
 
   return (
@@ -116,9 +92,7 @@ function ClinicalReport({ report }) {
     ? data.documentFindings
     : [];
 
-  const keyValues = Array.isArray(data.keyValues)
-    ? data.keyValues
-    : [];
+  const keyValues = Array.isArray(data.keyValues) ? data.keyValues : [];
 
   const missing = Array.isArray(data.missingInformation)
     ? data.missingInformation
@@ -233,19 +207,13 @@ function ClinicalReport({ report }) {
       {/* Allergies and medications */}
       <div className="grid gap-4 md:grid-cols-2">
         <section className={SECTION_STYLE}>
-          <SectionHeading
-            icon={ShieldAlert}
-            title="Allergies"
-          />
+          <SectionHeading icon={ShieldAlert} title="Allergies" />
 
           <TagList items={data.allergies} />
         </section>
 
         <section className={SECTION_STYLE}>
-          <SectionHeading
-            icon={Pill}
-            title="Current Medications"
-          />
+          <SectionHeading icon={Pill} title="Current Medications" />
 
           <TagList items={data.medications} />
         </section>
@@ -330,9 +298,9 @@ function ClinicalReport({ report }) {
       </section>
 
       <p className="px-1 text-xs leading-5 text-[#8995A3]">
-        This report contains patient-provided information and
-        extracted document details. It is intended for review
-        by a qualified healthcare professional.
+        This report contains patient-provided information and extracted document
+        details. It is intended for review by a qualified healthcare
+        professional.
       </p>
     </div>
   );
@@ -346,6 +314,7 @@ export default function NewConsultation() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [finalReport, setFinalReport] = useState(null);
+  const [accessToken, setAccessToken] = useState("");
 
   useEffect(() => {
     if (interviewSummary.trim()) {
@@ -380,16 +349,17 @@ export default function NewConsultation() {
         (typeof report !== "string" && typeof report !== "object")
       ) {
         throw new Error(
-          "The server did not return a valid consultation report."
+          "The server did not return a valid consultation report.",
         );
       }
 
       setFinalReport(report);
+      setAccessToken(result.accessToken);
     } catch (error) {
       console.error("Consultation submission failed:", error);
 
       setSubmitError(
-        error.message || "Unable to generate the report. Please try again."
+        error.message || "Unable to generate the report. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -453,6 +423,49 @@ export default function NewConsultation() {
 
           <ClinicalReport report={finalReport} />
 
+          {/* Patient Report Access Token */}
+          <div className="mt-6 rounded-xl border border-[#CFE0DA] bg-[#F4F8F6] p-5">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#E0EEE7] text-[#47796E]">
+                <KeyRound size={19} />
+              </div>
+
+              <div>
+                <h2 className="font-semibold text-[#214D43]">
+                  Your Report Access Token
+                </h2>
+
+                <p className="text-xs text-[#718096]">
+                  Share this token with your doctor.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <div className="flex-1 rounded-lg border border-[#DCE5DC] bg-white px-4 py-3">
+                <p className="text-lg font-bold tracking-widest text-[#315B78]">
+                  {accessToken}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(accessToken);
+                }}
+                className="rounded-lg bg-[#47796E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#315E54]"
+              >
+                Copy Token
+              </button>
+            </div>
+
+            <p className="mt-3 text-xs leading-5 text-[#718096]">
+              Keep this token private and share it only with your authorized
+              healthcare professional. Anyone who has the token may be able to
+              request access to your report.
+            </p>
+          </div>
+
           <div className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-[#E1E7EC] pt-5">
             <p className="text-xs text-[#718096]">
               Please verify the information before clinical use.
@@ -510,9 +523,7 @@ export default function NewConsultation() {
               </div>
             )}
 
-            {step === 1 && (
-              <MedicalHistory onComplete={setMedicalHistory} />
-            )}
+            {step === 1 && <MedicalHistory onComplete={setMedicalHistory} />}
 
             {step === 2 && (
               <MedicalDocumentUpload

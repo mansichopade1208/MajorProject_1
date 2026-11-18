@@ -37,3 +37,33 @@ export async function submitConsultation({
 
   return result.data;
 }
+
+
+export async function getMyConsultations() {
+  const token = sessionStorage.getItem("medikioskToken");
+
+  if (!token) {
+    throw new Error("Please log in to view your consultations.");
+  }
+
+  const response = await fetch(
+    `${API_URL}/api/consultations`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(
+      result.message || "Unable to fetch consultations."
+    );
+  }
+
+  return result.data || [];
+}
+
