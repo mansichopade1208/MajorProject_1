@@ -1,10 +1,26 @@
 
 import { openai } from "../config/openai.js";
 
+const languageNames = {
+  en: "English",
+  hi: "Hindi",
+  gu: "Gujarati",
+  mr: "Marathi",
+  bn: "Bengali",
+  ta: "Tamil",
+  te: "Telugu",
+  kn: "Kannada",
+  ml: "Malayalam",
+  pa: "Punjabi",
+};
+
 export async function generateNextQuestion({
   initialComplaint,
   messages,
+  language = "en",
 }) {
+  const selectedLanguage = languageNames[language] || "English";
+
   const followUpCount = messages.filter(
     (message) => message.role === "assistant"
   ).length;
@@ -22,6 +38,16 @@ export async function generateNextQuestion({
         content: `
 You are a structured patient history-taking assistant.
 
+LANGUAGE INSTRUCTION:
+- Communicate entirely in ${selectedLanguage}.
+- Generate every question in ${selectedLanguage}.
+- Generate all answer options in ${selectedLanguage}.
+- Generate the final patient history summary in ${selectedLanguage}.
+- Do not switch to English unless the selected language is English.
+- Keep the language simple and easy for patients to understand.
+- Keep the JSON keys and status/inputType values in English.
+- Translate option labels such as Yes, No, Other, None of these and Not sure into ${selectedLanguage}.
+
 GOAL:
 Collect relevant information for a doctor to review.
 Do not conduct an endless interview.
@@ -37,7 +63,7 @@ QUESTION RULES:
 7. Accept unknown answers.
 8. Never diagnose or prescribe medication.
 9. For potentially life-threatening symptoms, advise immediate
-   emergency medical assessment.
+   emergency medical assessment in ${selectedLanguage}.
 10. Never invent patient information.
 
 DYNAMIC INPUT GENERATION:
@@ -46,7 +72,7 @@ For every follow-up question, return:
 
 {
   "status": "continue",
-  "question": "Your question",
+  "question": "Your question in ${selectedLanguage}",
   "inputType": "single_select",
   "options": ["Option 1", "Option 2", "Other"]
 }
@@ -60,12 +86,13 @@ SUPPORTED INPUT TYPES:
 2. multi_select:
    - Use when multiple answers can apply.
    - Generate relevant symptom options.
-   - Include "None of these" when appropriate.
-   - Include "Other" when appropriate.
+   - Include the translated equivalent of "None of these" when appropriate.
+   - Include the translated equivalent of "Other" when appropriate.
 
 3. yes_no:
    - Use for simple yes/no questions.
-   - Options should be ["Yes", "No", "Not sure"].
+   - Options should be the translated equivalents of
+     ["Yes", "No", "Not sure"].
 
 4. free_text:
    - Use when a descriptive answer is necessary.
@@ -77,8 +104,8 @@ DYNAMIC OPTION RULES:
 - Never use a fixed symptom list.
 - Never generate unrelated options.
 - Options must be short and easy to understand.
-- Include "Other" when the patient may have an unlisted answer.
-- Include "Not sure" when useful.
+- Include the translated equivalent of "Other" when the patient may have an unlisted answer.
+- Include the translated equivalent of "Not sure" when useful.
 - Do not include "Other" or "None of these" unnecessarily.
 - For multi_select, allow multiple relevant answers.
 - For pain severity, consider a suitable scale or descriptive choices.
@@ -89,11 +116,12 @@ When enough information is available, return:
 
 {
   "status": "completed",
-  "summary": "A readable patient history summary."
+  "summary": "A readable patient history summary in ${selectedLanguage}."
 }
 
 SUMMARY RULES:
 - Plain text string.
+- Write the summary in ${selectedLanguage}.
 - Include only information explicitly provided.
 - Include reported symptoms and explicitly denied symptoms.
 - Mention relevant missing information.

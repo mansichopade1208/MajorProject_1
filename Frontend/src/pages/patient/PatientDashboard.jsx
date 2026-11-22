@@ -1,40 +1,55 @@
+
 import DashboardHeader from "../../components/patient/DashboardHeader";
 import WelcomeBanner from "../../components/patient/WelcomeBanner";
 import QuickAccessCard from "../../components/patient/QuickAccessCard";
-import RecentActivity from "../../components/patient/RecentActivity";
-import HealthSummary from "../../components/patient/HealthSummary";
 import SecurityNotice from "../../components/patient/SecurityNotice";
 
-import {
-  quickAccessItems,
-  recentActivities,
-} from "../../data/dashboardData";
+import { getQuickAccessItems } from "../../data/dashboardData";
+
+const translations = {
+  en: { quickAccess: "Quick Access" },
+  hi: { quickAccess: "त्वरित पहुँच" },
+  gu: { quickAccess: "ઝડપી ઍક્સેસ" },
+  mr: { quickAccess: "जलद प्रवेश" },
+  bn: { quickAccess: "দ্রুত অ্যাক্সেস" },
+  ta: { quickAccess: "விரைவு அணுகல்" },
+  te: { quickAccess: "త్వరిత ప్రాప్యత" },
+  kn: { quickAccess: "ತ್ವರಿತ ಪ್ರವೇಶ" },
+  ml: { quickAccess: "വേഗത്തിലുള്ള പ്രവേശനം" },
+  pa: { quickAccess: "ਤੁਰੰਤ ਪਹੁੰਚ" },
+};
 
 export default function PatientDashboard() {
+  const language = (
+    sessionStorage.getItem("medikioskLanguage") || "en"
+  ).trim().toLowerCase();
+
+  const t = translations[language] || translations.en;
+  const quickAccessItems = getQuickAccessItems(language);
+
   return (
     <div className="mx-auto max-w-[1500px]">
-      <DashboardHeader />
+      <DashboardHeader language={language} />
 
-      <WelcomeBanner />
+      <WelcomeBanner language={language} />
 
       <section className="mb-8">
         <h2 className="mb-4 text-xl font-bold text-[#214D43]">
-          Quick Access
+          {t.quickAccess}
         </h2>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {quickAccessItems.map((item) => (
-            <QuickAccessCard key={item.path} item={item} />
+            <QuickAccessCard
+              key={item.path}
+              item={item}
+              language={language}
+            />
           ))}
         </div>
       </section>
 
-      {/* <section className="mb-8 grid grid-cols-1 items-stretch gap-5 xl:grid-cols-2">
-        <RecentActivity activities={recentActivities} />
-        <HealthSummary />
-      </section> */}
-
-      <SecurityNotice />
+      <SecurityNotice language={language} />
     </div>
   );
 }

@@ -2,7 +2,11 @@
 const API_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-export async function getNextQuestion(initialComplaint, messages) {
+export async function getNextQuestion(
+  initialComplaint,
+  messages,
+  language = "en"
+) {
   const response = await fetch(
     `${API_URL}/api/health-interview/next`,
     {
@@ -13,6 +17,7 @@ export async function getNextQuestion(initialComplaint, messages) {
       body: JSON.stringify({
         initialComplaint,
         messages,
+        language,
       }),
     }
   );
@@ -27,7 +32,6 @@ export async function getNextQuestion(initialComplaint, messages) {
     );
   }
 
-  // Support both response formats
   const result = responseBody.data ?? responseBody;
 
   if (!result || typeof result !== "object") {
