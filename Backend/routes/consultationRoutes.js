@@ -5,7 +5,7 @@ import { extractPdfText } from "../utils/pdfParser.js";
 import { createWorker } from "tesseract.js";
 import { pdf as renderPdf } from "pdf-to-img";
 import { z } from "zod";
-
+import User from "../models/User.js";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -249,6 +249,92 @@ function decryptAccessToken(report) {
 
   return decrypted;
 }
+
+// ==================== DOCTOR: LOOK UP REPORT USING PATIENT TOKEN ====================
+
+router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
+  try {
+    // Only authenticated doctors can look up patient reports.
+    if (req.user.role !== "doctor") {
+      return res.status(403).json({
+        success: false,
+        message: "Only doctors can access patient reports.",
+      });
+    }
+
+    const { accessToken } = req.body;
+
+    if (
+      typeof accessToken !== "string" ||
+      !accessToken.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter the patient's access token.",
+      });
+    }
+
+    // Normalize the token before hashing.
+    const normalizedToken = accessToken.trim().toUpperCase();
+
+    // Find the report using the stored token hash.
+    const report = await ConsultationReport.findOne({
+      accessTokenHash: hashAccessToken(normalizedToken),
+    })
+      .select("patientId finalReport createdAt")
+      .lean();
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: "No report found. Please check the access token.",
+      });
+    }
+
+    // Fetch only the patient details needed by the doctor.
+    const patient = await User.findOne({
+      _id: report.patientId,
+      role: "patient",
+    })
+      .select("fullName email phone dateOfBirth gender bloodGroup city")
+      .lean();
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient information could not be found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Patient report retrieved successfully.",
+      data: {
+        patient: {
+          id: patient._id,
+          fullName: patient.fullName,
+          email: patient.email,
+          phone: patient.phone,
+          dateOfBirth: patient.dateOfBirth,
+          gender: patient.gender,
+          bloodGroup: patient.bloodGroup,
+          city: patient.city,
+        },
+        report: report.finalReport,
+        reportId: report._id,
+        createdAt: report.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Doctor report lookup error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve the patient report.",
+    });
+  }
+});
+
 
 // ==================== GET PATIENT CONSULTATIONS ====================
 

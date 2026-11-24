@@ -1,11 +1,9 @@
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Plus,
   LayoutDashboard,
-  Users,
-  FileCheck2,
-  Settings,
+  FileText,
   X,
   Headset,
   LogOut,
@@ -13,13 +11,26 @@ import {
 
 export default function DoctorSidebar({ open, onClose }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/doctor/dashboard" },
-    { label: "Patients", icon: Users, path: "/doctor/patients" },
-    { label: "Reviews", icon: FileCheck2, path: "/doctor/reviews" },
-    { label: "Settings", icon: Settings, path: "/doctor/settings" },
+    {
+      label: "Doctor Dashboard",
+      icon: LayoutDashboard,
+      path: "/doctor/dashboard",
+    },
+    {
+      label: "Patient Reports",
+      icon: FileText,
+      path: "/doctor/patient-reports",
+    },
   ];
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("medikioskToken");
+    sessionStorage.removeItem("medikioskUser");
+    navigate("/login");
+  };
 
   return (
     <>
@@ -30,18 +41,20 @@ export default function DoctorSidebar({ open, onClose }) {
         />
       )}
 
-      <aside className={`fixed lg:sticky top-0 left-0 z-40
-        w-[235px] h-screen shrink-0
-        bg-gradient-to-b from-[#214A43] to-[#173B35]
-        text-white flex flex-col transition-transform duration-300
-        ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-
-        <div className="h-[110px] px-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#DCEBE3] rounded-xl p-2">
-              <Plus size={27} className="text-[#214A43]" strokeWidth={4} />
+      <aside
+        className={`fixed inset-y-0 left-0 z-40
+        w-[216px] h-screen
+        bg-[#17483F] text-white
+        flex flex-col transition-transform duration-300
+        ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+      >
+        <div className="h-[110px] px-5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="bg-[#2F8878] rounded-xl p-2">
+              <Plus size={27} strokeWidth={3.5} />
             </div>
-            <span className="text-2xl font-bold tracking-tight">
+
+            <span className="text-xl font-bold tracking-tight">
               MediKiosk
             </span>
           </div>
@@ -51,49 +64,53 @@ export default function DoctorSidebar({ open, onClose }) {
           </button>
         </div>
 
-        <nav className="px-4 space-y-3 mt-5">
-          {menuItems.map((item, index) => {
-            const Icon = item.icon;
+        <nav className="flex-1 px-4 mt-5 space-y-2">
+          {menuItems.map(({ label, icon: Icon, path }) => {
+            const isActive = location.pathname === path;
 
             return (
               <button
-                key={item.path}
+                key={path}
                 onClick={() => {
-                  navigate(item.path);
+                  navigate(path);
                   onClose();
                 }}
-                className={`w-full flex items-center gap-4
-                  px-4 py-4 rounded-xl transition text-left
-                  ${index === 0
-                    ? "bg-[#E5F0E9] text-[#214A43] shadow-sm"
-                    : "text-white hover:bg-white/10"}`}
+                className={`w-full flex items-center gap-3
+                  rounded-xl px-3 py-3 text-sm transition-colors
+                  ${
+                    isActive
+                      ? "bg-[#F6F7F1] font-semibold text-[#17483F] shadow-sm"
+                      : "text-[#E0EDE7] hover:bg-white/10"
+                  }`}
               >
-                <Icon size={23} />
-                <span className="font-medium">{item.label}</span>
+                <Icon size={20} strokeWidth={1.8} />
+                <span>{label}</span>
               </button>
             );
           })}
         </nav>
 
-        <div className="mt-auto px-4 pb-5 space-y-3">
-          <div className="bg-white/10 border border-white/10
-            rounded-2xl p-4 flex items-center gap-3">
-            <Headset size={26} />
-            <div>
-              <p className="font-semibold text-sm">Need help?</p>
-              <p className="text-xs text-white/75 mt-1">
-                Contact support
-              </p>
+        <div className="px-4 pb-5">
+          <div className="rounded-xl border border-white/10
+            bg-white/[0.08] p-3">
+            <div className="flex items-center gap-2">
+              <Headset size={20} />
+              <p className="text-sm font-semibold">Need help?</p>
             </div>
+
+            <p className="mt-1 text-xs text-[#D1E3DC]">
+              Contact support if you need assistance.
+            </p>
           </div>
 
           <button
-            onClick={() => navigate("/login")}
-            className="w-full border border-white/60 rounded-xl
-              py-3 flex items-center justify-center gap-2
+            onClick={handleLogout}
+            className="mt-3 w-full flex items-center
+              justify-center gap-2 rounded-xl
+              border border-white/50 py-3 text-sm
               hover:bg-white/10 transition"
           >
-            <LogOut size={19} />
+            <LogOut size={17} />
             Log Out
           </button>
         </div>
