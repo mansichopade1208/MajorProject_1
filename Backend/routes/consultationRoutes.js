@@ -306,6 +306,14 @@ router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
       });
     }
 
+    const documents = await MedicalDocument.find({
+      patientId: report.patientId,
+      consultationId: report._id,
+    })
+      .select("_id originalName mimeType fileSize category createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
+
     return res.status(200).json({
       success: true,
       message: "Patient report retrieved successfully.",
@@ -323,6 +331,7 @@ router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
         report: report.finalReport,
         reportId: report._id,
         createdAt: report.createdAt,
+        documents,
       },
     });
   } catch (error) {
@@ -335,6 +344,83 @@ router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
   }
 });
 
+
+//checks that the authenticated user is a doctor and that the document belongs to the requested consultation
+router.get(
+  "/doctor/:reportId/documents/:documentId/file",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      if (req.user.role !== "doctor") {
+        return res.status(403).json({
+          success: false,
+          message: "Only doctors can view patient documents.",
+        });
+      }
+
+      const report = await ConsultationReport.findById(
+        req.params.reportId
+      ).select("patientId accessTokenHash");
+
+      const providedToken = req.headers["x-report-access-token"];
+
+      if (
+        typeof providedToken !== "string" ||
+        hashAccessToken(providedToken.trim().toUpperCase()) !==
+        report.accessTokenHash
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Invalid report access token.",
+        });
+      }
+
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: "Consultation report not found.",
+        });
+      }
+
+      const document = await MedicalDocument.findOne({
+        _id: req.params.documentId,
+        consultationId: report._id,
+        patientId: report.patientId,
+      });
+
+      if (!document) {
+        return res.status(404).json({
+          success: false,
+          message: "Document not found.",
+        });
+      }
+
+      res.setHeader("Content-Type", document.mimeType);
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename="${path.basename(document.originalName)}"`
+      );
+      res.setHeader("X-Content-Type-Options", "nosniff");
+
+      return res.sendFile(document.filePath, (error) => {
+        if (error && !res.headersSent) {
+          console.error("Doctor document viewing error:", error);
+          res.status(404).json({
+            success: false,
+            message: "Unable to open this document.",
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Doctor document error:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to view the document.",
+      });
+    }
+  }
+);
 
 // ==================== GET PATIENT CONSULTATIONS ====================
 
@@ -440,10 +526,16 @@ router.post(
           );
 
           if (!extractedText || !extractedText.trim()) {
-            return res.status(400).json({
-              success: false,
-              message: `No readable text found in "${file.originalname}".`,
-            });
+            // A normal X-ray image may not contain readable text.
+            // Keep the original image, but do not send empty OCR text to AI.
+            if (isPdf(file)) {
+              return res.status(400).json({
+                success: false,
+                message: `No readable text found in "${file.originalname}".`,
+              });
+            }
+
+            continue;
           }
 
           documents.push({
@@ -527,6 +619,7 @@ router.post(
             mimeType,
             fileSize: file.size,
             uploadSource: "consultation",
+            category: isImage(file) ? "Scans & Images" : "Other",
           });
         }
 

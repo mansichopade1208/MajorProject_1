@@ -46,7 +46,7 @@ export default function Navbar() {
           Home
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to="/about"
           className={({ isActive }) =>
             `relative py-3 text-base transition-colors ${
@@ -57,7 +57,7 @@ export default function Navbar() {
           }
         >
           About
-        </NavLink>
+        </NavLink> */}
 
         {/* Doctor Dashboard */}
         <Link

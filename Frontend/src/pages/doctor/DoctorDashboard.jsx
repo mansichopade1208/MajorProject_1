@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,10 +19,11 @@ import {
   UserRound,
 } from "lucide-react";
 
+import PatientDocuments from "../../components/doctor/PatientDocuments.jsx";
+
 const API_URL = "http://localhost:5000/api";
 
-const cardClass =
-  "rounded-2xl border border-[#E6EAE2] bg-white p-5 shadow-sm";
+const cardClass = "rounded-2xl border border-[#E6EAE2] bg-white p-5 shadow-sm";
 
 function formatDate(date) {
   if (!date) return "Not provided";
@@ -58,9 +58,7 @@ function getAge(dateOfBirth) {
 
 function ValueList({ items, emptyText = "Not provided" }) {
   if (!Array.isArray(items) || items.length === 0) {
-    return (
-      <p className="text-sm text-[#8A9B93]">{emptyText}</p>
-    );
+    return <p className="text-sm text-[#8A9B93]">{emptyText}</p>;
   }
 
   return (
@@ -95,9 +93,7 @@ function ReportSection({ title, icon: Icon, children }) {
           <Icon size={19} />
         </div>
 
-        <h3 className="text-base font-bold text-[#214A43]">
-          {title}
-        </h3>
+        <h3 className="text-base font-bold text-[#214A43]">{title}</h3>
       </div>
 
       {children}
@@ -114,9 +110,7 @@ export default function DoctorDashboard() {
   const [patientData, setPatientData] = useState(null);
 
   useEffect(() => {
-    const user = JSON.parse(
-      sessionStorage.getItem("medikioskUser") || "null"
-    );
+    const user = JSON.parse(sessionStorage.getItem("medikioskUser") || "null");
 
     if (!user || user.role !== "doctor") {
       navigate("/login", { replace: true });
@@ -156,7 +150,7 @@ export default function DoctorDashboard() {
           body: JSON.stringify({
             accessToken: accessToken.trim(),
           }),
-        }
+        },
       );
 
       const result = await response.json();
@@ -169,9 +163,7 @@ export default function DoctorDashboard() {
       }
 
       if (!response.ok || !result.success) {
-        throw new Error(
-          result.message || "Unable to retrieve patient report."
-        );
+        throw new Error(result.message || "Unable to retrieve patient report.");
       }
 
       setPatientData(result.data);
@@ -179,7 +171,7 @@ export default function DoctorDashboard() {
       setError(
         err.message === "Failed to fetch"
           ? "Cannot connect to the backend. Please check your server."
-          : err.message
+          : err.message,
       );
     } finally {
       setLoading(false);
@@ -197,7 +189,6 @@ export default function DoctorDashboard() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F2] text-[#214A43]">
-
       {/* Sidebar - follows the patient dashboard's layout */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[216px] border-r border-[#E8EDE7] bg-white lg:flex lg:flex-col">
         <div className="flex h-20 items-center gap-3 border-b border-[#E8EDE7] px-6">
@@ -206,9 +197,7 @@ export default function DoctorDashboard() {
           </div>
 
           <div>
-            <h1 className="text-lg font-bold text-[#214A43]">
-              MediKiosk
-            </h1>
+            <h1 className="text-lg font-bold text-[#214A43]">MediKiosk</h1>
             <p className="text-[10px] tracking-wider text-[#81958B]">
               HEALTHCARE PORTAL
             </p>
@@ -224,8 +213,6 @@ export default function DoctorDashboard() {
             <Activity size={18} />
             Doctor Dashboard
           </div>
-
-          
         </div>
 
         <div className="mt-auto border-t border-[#E8EDE7] p-5">
@@ -238,9 +225,7 @@ export default function DoctorDashboard() {
               <p className="text-sm font-semibold text-[#214A43]">
                 Doctor Account
               </p>
-              <p className="text-xs text-[#8A9B93]">
-                Healthcare Professional
-              </p>
+              <p className="text-xs text-[#8A9B93]">Healthcare Professional</p>
             </div>
           </div>
 
@@ -256,7 +241,6 @@ export default function DoctorDashboard() {
 
       {/* Main area */}
       <main className="min-h-screen lg:ml-[216px]">
-
         {/* Header */}
         <header className="sticky top-0 z-20 flex min-h-[76px] items-center justify-between border-b border-[#E8EDE7] bg-[#FAF8F2]/95 px-4 backdrop-blur sm:px-7 lg:px-9">
           <div>
@@ -277,20 +261,17 @@ export default function DoctorDashboard() {
         </header>
 
         <div className="space-y-6 px-4 py-6 sm:px-7 lg:px-9 lg:py-8">
-
           {/* Welcome */}
           <section>
-            <p className="text-sm font-medium text-[#789087]">
-              Welcome back
-            </p>
+            <p className="text-sm font-medium text-[#789087]">Welcome back</p>
 
             <h1 className="mt-1 text-2xl font-bold text-[#214A43]">
               Patient Consultation
             </h1>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[#789087]">
-              Enter the access token shared by your patient to
-              securely retrieve their consultation report.
+              Enter the access token shared by your patient to securely retrieve
+              their consultation report.
             </p>
           </section>
 
@@ -356,13 +337,11 @@ export default function DoctorDashboard() {
                 <ClipboardList size={30} />
               </div>
 
-              <h3 className="font-bold text-[#315E54]">
-                No Patient Selected
-              </h3>
+              <h3 className="font-bold text-[#315E54]">No Patient Selected</h3>
 
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#8A9B93]">
-                Enter a patient's access token above. Their
-                consultation report will appear here.
+                Enter a patient's access token above. Their consultation report
+                will appear here.
               </p>
             </div>
           )}
@@ -370,7 +349,6 @@ export default function DoctorDashboard() {
           {/* Patient report */}
           {patientData && patient && report && (
             <div className="space-y-5">
-
               {/* Report heading */}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -457,9 +435,7 @@ export default function DoctorDashboard() {
               <section className="rounded-2xl border border-[#CFE0D4] bg-[#EDF5EF] p-5 sm:p-6">
                 <div className="mb-3 flex items-center gap-2">
                   <Activity size={20} className="text-[#47796F]" />
-                  <h3 className="font-bold text-[#214A43]">
-                    Clinical Summary
-                  </h3>
+                  <h3 className="font-bold text-[#214A43]">Clinical Summary</h3>
                 </div>
 
                 <p className="text-sm leading-7 text-[#315E54]">
@@ -468,10 +444,7 @@ export default function DoctorDashboard() {
               </section>
 
               {/* Chief complaint */}
-              <ReportSection
-                title="Chief Complaint"
-                icon={ClipboardList}
-              >
+              <ReportSection title="Chief Complaint" icon={ClipboardList}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <InfoBlock
                     label="Main Problem"
@@ -491,10 +464,7 @@ export default function DoctorDashboard() {
               </ReportSection>
 
               {/* Symptoms */}
-              <ReportSection
-                title="Reported Symptoms"
-                icon={Activity}
-              >
+              <ReportSection title="Reported Symptoms" icon={Activity}>
                 <ValueList items={report.symptoms} />
               </ReportSection>
 
@@ -531,35 +501,23 @@ export default function DoctorDashboard() {
               </ReportSection>
 
               {/* History */}
-              <ReportSection
-                title="Medical History"
-                icon={FileText}
-              >
+              <ReportSection title="Medical History" icon={FileText}>
                 <ValueList items={report.medicalHistory} />
               </ReportSection>
 
               {/* Allergies and medicines */}
               <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                <ReportSection
-                  title="Known Allergies"
-                  icon={AlertCircle}
-                >
+                <ReportSection title="Known Allergies" icon={AlertCircle}>
                   <ValueList items={report.allergies} />
                 </ReportSection>
 
-                <ReportSection
-                  title="Current Medications"
-                  icon={HeartPulse}
-                >
+                <ReportSection title="Current Medications" icon={HeartPulse}>
                   <ValueList items={report.medications} />
                 </ReportSection>
               </div>
 
               {/* Document findings */}
-              <ReportSection
-                title="Uploaded Document Findings"
-                icon={FileText}
-              >
+              <ReportSection title="Uploaded Document Findings" icon={FileText}>
                 {Array.isArray(report.documentFindings) &&
                 report.documentFindings.length > 0 ? (
                   <div className="space-y-3">
@@ -593,23 +551,25 @@ export default function DoctorDashboard() {
                 )}
               </ReportSection>
 
+              {/* Original uploaded documents and X-rays */}
+              <PatientDocuments
+                documents={patientData.documents || []}
+                reportId={patientData.reportId}
+                accessToken={accessToken}
+              />
+
               {/* Missing information */}
-              <ReportSection
-                title="Missing Information"
-                icon={AlertCircle}
-              >
+              <ReportSection title="Missing Information" icon={AlertCircle}>
                 <ValueList items={report.missingInformation} />
               </ReportSection>
 
               {/* Footer note */}
               <div className="rounded-xl border border-[#E7EAE3] bg-white px-4 py-3 text-xs leading-6 text-[#82948B]">
-                This report is an AI-generated clinical summary based
-                on the information supplied by the patient and
-                uploaded documents. Verify relevant details with
-                the patient and original documents before making
-                clinical decisions.
+                This report is an AI-generated clinical summary based on the
+                information supplied by the patient and uploaded documents.
+                Verify relevant details with the patient and original documents
+                before making clinical decisions.
               </div>
-
             </div>
           )}
         </div>
