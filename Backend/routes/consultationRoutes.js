@@ -36,13 +36,20 @@ const documentStorageDirectory = path.join(
   "medical-documents"
 );
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
 const MAX_FILES = 5;
 const MAX_TEXT_LENGTH = 5000;
 const MAX_EXTRACTED_TEXT = 100000;
 const MIN_PDF_TEXT_LENGTH = 30;
 
-const ALLOWED_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png"];
+const ALLOWED_EXTENSIONS = [
+  ".pdf",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".dcm",
+  ".zip",
+];
 
 function getExtension(filename) {
   return path.extname(filename).toLowerCase();
@@ -56,6 +63,18 @@ function isImage(file) {
   return [".jpg", ".jpeg", ".png"].includes(
     getExtension(file.originalname)
   );
+}
+
+function isDicom(file) {
+  return getExtension(file.originalname) === ".dcm";
+}
+
+function isDicomZip(file) {
+  return getExtension(file.originalname) === ".zip";
+}
+
+function isDicomFile(file) {
+  return isDicom(file) || isDicomZip(file);
 }
 
 // ==================== MULTER ====================
@@ -73,6 +92,9 @@ const upload = multer({
       "application/pdf",
       "image/jpeg",
       "image/png",
+      "application/dicom",
+      "application/zip",
+      "application/x-zip-compressed",
       "application/octet-stream",
     ];
 
@@ -81,7 +103,9 @@ const upload = multer({
       !allowedMimes.includes(file.mimetype)
     ) {
       return callback(
-        new Error("Only PDF, JPG, JPEG and PNG files are allowed.")
+        new Error(
+          "Only PDF, JPG, JPEG, PNG, DICOM and ZIP files are allowed."
+        )
       );
     }
 
@@ -93,6 +117,16 @@ const upload = multer({
 
 function hasValidPdfSignature(buffer) {
   return buffer.subarray(0, 5).toString() === "%PDF-";
+}
+
+function hasValidZipSignature(buffer) {
+  if (!buffer || buffer.length < 4) {
+    return false;
+  }
+
+  const signature = buffer.subarray(0, 4).toString("hex");
+
+  return ["504b0304", "504b0506", "504b0708"].includes(signature);
 }
 
 function getImageType(buffer) {
@@ -118,6 +152,21 @@ function getImageType(buffer) {
   }
 
   return null;
+}
+
+function getStoredMimeType(file) {
+  if (isPdf(file)) return "application/pdf";
+  if (isDicom(file)) return "application/dicom";
+  if (isDicomZip(file)) return "application/zip";
+
+  return getImageType(file.buffer);
+}
+
+function validateDicomFile(file) {
+  // DICOM files can have different encodings and may not always
+  // contain the standard DICM marker at byte position 128.
+  // The .dcm extension is used here to identify the upload.
+  return isDicom(file) && file.buffer.length > 0;
 }
 
 // ==================== REQUEST VALIDATION ====================
@@ -176,6 +225,24 @@ async function extractDocumentText(file, getOcrWorker) {
       file.buffer,
       await getOcrWorker()
     );
+  }
+
+  // DICOM and ZIP files are stored in their original form.
+  // They are not processed by OCR or sent to the AI summariser.
+  if (isDicom(file)) {
+    if (!validateDicomFile(file)) {
+      throw new Error("INVALID_DICOM");
+    }
+
+    return "";
+  }
+
+  if (isDicomZip(file)) {
+    if (!hasValidZipSignature(file.buffer)) {
+      throw new Error("INVALID_DICOM_ZIP");
+    }
+
+    return "";
   }
 
   throw new Error("UNSUPPORTED_FILE");
@@ -254,7 +321,6 @@ function decryptAccessToken(report) {
 
 router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
   try {
-    // Only authenticated doctors can look up patient reports.
     if (req.user.role !== "doctor") {
       return res.status(403).json({
         success: false,
@@ -274,10 +340,8 @@ router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
       });
     }
 
-    // Normalize the token before hashing.
     const normalizedToken = accessToken.trim().toUpperCase();
 
-    // Find the report using the stored token hash.
     const report = await ConsultationReport.findOne({
       accessTokenHash: hashAccessToken(normalizedToken),
     })
@@ -291,7 +355,6 @@ router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
       });
     }
 
-    // Fetch only the patient details needed by the doctor.
     const patient = await User.findOne({
       _id: report.patientId,
       role: "patient",
@@ -344,8 +407,8 @@ router.post("/doctor/lookup-token", authenticateToken, async (req, res) => {
   }
 });
 
+// ==================== DOCTOR: VIEW UPLOADED DOCUMENT ====================
 
-//checks that the authenticated user is a doctor and that the document belongs to the requested consultation
 router.get(
   "/doctor/:reportId/documents/:documentId/file",
   authenticateToken,
@@ -362,23 +425,23 @@ router.get(
         req.params.reportId
       ).select("patientId accessTokenHash");
 
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: "Consultation report not found.",
+        });
+      }
+
       const providedToken = req.headers["x-report-access-token"];
 
       if (
         typeof providedToken !== "string" ||
         hashAccessToken(providedToken.trim().toUpperCase()) !==
-        report.accessTokenHash
+          report.accessTokenHash
       ) {
         return res.status(403).json({
           success: false,
           message: "Invalid report access token.",
-        });
-      }
-
-      if (!report) {
-        return res.status(404).json({
-          success: false,
-          message: "Consultation report not found.",
         });
       }
 
@@ -395,16 +458,21 @@ router.get(
         });
       }
 
+      const safeFileName = path
+        .basename(document.originalName)
+        .replace(/["\\]/g, "_");
+
       res.setHeader("Content-Type", document.mimeType);
       res.setHeader(
         "Content-Disposition",
-        `inline; filename="${path.basename(document.originalName)}"`
+        `inline; filename="${safeFileName}"`
       );
       res.setHeader("X-Content-Type-Options", "nosniff");
 
       return res.sendFile(document.filePath, (error) => {
         if (error && !res.headersSent) {
           console.error("Doctor document viewing error:", error);
+
           res.status(404).json({
             success: false,
             message: "Unable to open this document.",
@@ -501,7 +569,8 @@ router.post(
       if (!validation.success) {
         return res.status(400).json({
           success: false,
-          message: "Please provide a valid interview summary and medical history.",
+          message:
+            "Please provide a valid interview summary and medical history.",
         });
       }
 
@@ -517,7 +586,8 @@ router.post(
         return ocrWorker;
       };
 
-      // Extract text from uploaded documents
+      // Extract text only from PDFs and normal images.
+      // DICOM files are intentionally excluded from AI processing.
       for (const file of files) {
         try {
           const extractedText = await extractDocumentText(
@@ -525,9 +595,11 @@ router.post(
             getOcrWorker
           );
 
+          if (isDicomFile(file)) {
+            continue;
+          }
+
           if (!extractedText || !extractedText.trim()) {
-            // A normal X-ray image may not contain readable text.
-            // Keep the original image, but do not send empty OCR text to AI.
             if (isPdf(file)) {
               return res.status(400).json({
                 success: false,
@@ -546,6 +618,8 @@ router.post(
           const messages = {
             INVALID_PDF: "is not a valid PDF.",
             INVALID_IMAGE: "is not a valid JPG or PNG image.",
+            INVALID_DICOM: "is not a valid DICOM file.",
+            INVALID_DICOM_ZIP: "is not a valid ZIP archive.",
             UNSUPPORTED_FILE: "has an unsupported file format.",
           };
 
@@ -565,18 +639,18 @@ router.post(
         }
       }
 
-      // Generate AI report
+      // Generate AI report using text-based documents only.
       const finalReport = await generateFinalReport({
         interviewSummary,
         medicalHistory,
         documents,
       });
 
-      // Generate and encrypt patient token
+      // Generate and encrypt patient token.
       const accessToken = generateAccessToken();
       const encryptedToken = encryptAccessToken(accessToken);
 
-      // Save consultation report
+      // Save consultation report.
       savedReport = await ConsultationReport.create({
         patientId: req.user.userId,
         finalReport,
@@ -586,7 +660,7 @@ router.post(
         accessTokenAuthTag: encryptedToken.authTag,
       });
 
-      // Save original uploaded documents
+      // Save original uploaded documents.
       if (files.length > 0) {
         await mkdir(documentStorageDirectory, {
           recursive: true,
@@ -606,9 +680,21 @@ router.post(
           await writeFile(absoluteFilePath, file.buffer);
           savedFilePaths.push(absoluteFilePath);
 
-          const mimeType = isPdf(file)
-            ? "application/pdf"
-            : getImageType(file.buffer);
+          const mimeType = getStoredMimeType(file);
+
+          if (!mimeType) {
+            throw new Error("INVALID_FILE_CONTENT");
+          }
+
+          let category = "Other";
+
+          if (isImage(file) || isDicom(file)) {
+            category = "Scans & Images";
+          }
+
+          if (isDicomZip(file)) {
+            category = "DICOM Series";
+          }
 
           documentRecords.push({
             patientId: req.user.userId,
@@ -619,7 +705,7 @@ router.post(
             mimeType,
             fileSize: file.size,
             uploadSource: "consultation",
-            category: isImage(file) ? "Scans & Images" : "Other",
+            category,
           });
         }
 
@@ -637,7 +723,7 @@ router.post(
         },
       });
     } catch (error) {
-      // Clean up saved records if submission fails
+      // Clean up saved records if submission fails.
       if (savedReport) {
         try {
           await MedicalDocument.deleteMany({
@@ -662,7 +748,7 @@ router.post(
           success: false,
           message:
             error.code === "LIMIT_FILE_SIZE"
-              ? "Each document must be 10 MB or smaller."
+              ? "Each document must be 100 MB or smaller."
               : error.code === "LIMIT_FILE_COUNT"
                 ? "You can upload a maximum of 5 documents."
                 : "Uploaded files could not be processed.",
@@ -671,11 +757,18 @@ router.post(
 
       if (
         error.message ===
-        "Only PDF, JPG, JPEG and PNG files are allowed."
+        "Only PDF, JPG, JPEG, PNG, DICOM and ZIP files are allowed."
       ) {
         return res.status(400).json({
           success: false,
           message: error.message,
+        });
+      }
+
+      if (error.message === "INVALID_FILE_CONTENT") {
+        return res.status(400).json({
+          success: false,
+          message: "One of the uploaded files has invalid content.",
         });
       }
 

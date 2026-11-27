@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import PatientDocuments from "../../components/doctor/PatientDocuments.jsx";
+import DicomViewer from "../../components/doctor/DicomViewer.jsx";
 
 const API_URL = "http://localhost:5000/api";
 
@@ -557,6 +558,13 @@ export default function DoctorDashboard() {
                 reportId={patientData.reportId}
                 accessToken={accessToken}
               />
+
+              {/* Interactive DICOM Medical Scan Viewer */}
+              <DicomViewer
+                documents={patientData.documents || []}
+                reportId={patientData.reportId}
+                accessToken={accessToken}
+               /> 
 
               {/* Missing information */}
               <ReportSection title="Missing Information" icon={AlertCircle}>

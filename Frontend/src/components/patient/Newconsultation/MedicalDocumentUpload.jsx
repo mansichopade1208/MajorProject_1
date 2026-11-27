@@ -10,10 +10,17 @@ import {
   Eye,
 } from "lucide-react";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
 const MAX_FILES = 5;
 
-const ALLOWED_EXTENSIONS = ["pdf", "jpg", "jpeg", "png"];
+const ALLOWED_EXTENSIONS = [
+  "pdf",
+  "jpg",
+  "jpeg",
+  "png",
+  "dcm",
+  "zip",
+];
 
 const translations = {
   en: {
@@ -29,7 +36,7 @@ const translations = {
     image: "Image",
     preview: "Preview",
     close: "Close preview",
-    onlyAllowed: "Only PDF, JPG and PNG files are allowed.",
+    onlyAllowed: "Only supported medical document formats are allowed.",
     empty: "This file is empty.",
     maxSize: "File size must be 10 MB or smaller.",
     maxFiles: "You can upload a maximum of 5 documents.",
@@ -50,7 +57,7 @@ const translations = {
     image: "छवि",
     preview: "देखें",
     close: "पूर्वावलोकन बंद करें",
-    onlyAllowed: "केवल PDF, JPG और PNG फ़ाइलें स्वीकार की जाती हैं।",
+    onlyAllowed: "केवल समर्थित मेडिकल दस्तावेज़ फ़ाइलें स्वीकार की जाती हैं।",
     empty: "यह फ़ाइल खाली है।",
     maxSize: "फ़ाइल का आकार 10 MB या उससे कम होना चाहिए।",
     maxFiles: "आप अधिकतम 5 दस्तावेज़ अपलोड कर सकते हैं।",
@@ -71,7 +78,7 @@ const translations = {
     image: "છબી",
     preview: "પૂર્વાવલોકન",
     close: "પૂર્વાવલોકન બંધ કરો",
-    onlyAllowed: "ફક્ત PDF, JPG અને PNG ફાઇલો માન્ય છે.",
+    onlyAllowed: "માત્ર સપોર્ટેડ મેડિકલ દસ્તાવેજો સ્વીકારવામાં આવે છે.",
     empty: "આ ફાઇલ ખાલી છે.",
     maxSize: "ફાઇલનું કદ 10 MB અથવા તેનાથી ઓછું હોવું જોઈએ.",
     maxFiles: "તમે વધુમાં વધુ 5 દસ્તાવેજો અપલોડ કરી શકો છો.",
@@ -92,7 +99,7 @@ const translations = {
     image: "प्रतिमा",
     preview: "पूर्वावलोकन",
     close: "पूर्वावलोकन बंद करा",
-    onlyAllowed: "फक्त PDF, JPG आणि PNG फाइल स्वीकारल्या जातात.",
+    onlyAllowed: "फक्त समर्थित वैद्यकीय कागदपत्रे स्वीकारली जातात.",
     empty: "ही फाइल रिकामी आहे.",
     maxSize: "फाइलचा आकार 10 MB किंवा त्यापेक्षा कमी असावा.",
     maxFiles: "तुम्ही जास्तीत जास्त 5 कागदपत्रे अपलोड करू शकता.",
@@ -113,7 +120,7 @@ const translations = {
     image: "ছবি",
     preview: "পূর্বরূপ",
     close: "পূর্বরূপ বন্ধ করুন",
-    onlyAllowed: "শুধুমাত্র PDF, JPG এবং PNG ফাইল গ্রহণযোগ্য।",
+    onlyAllowed: "শুধুমাত্র সমর্থিত মেডিকেল নথি গ্রহণযোগ্য।",
     empty: "এই ফাইলটি খালি।",
     maxSize: "ফাইলের আকার 10 MB বা তার কম হতে হবে।",
     maxFiles: "আপনি সর্বোচ্চ 5টি নথি আপলোড করতে পারেন।",
@@ -134,7 +141,7 @@ const translations = {
     image: "படம்",
     preview: "முன்னோட்டம்",
     close: "முன்னோட்டத்தை மூடு",
-    onlyAllowed: "PDF, JPG மற்றும் PNG கோப்புகள் மட்டுமே அனுமதிக்கப்படும்.",
+    onlyAllowed: "ஆதரிக்கப்படும் மருத்துவ ஆவணங்கள் மட்டுமே அனுமதிக்கப்படும்.",
     empty: "இந்தக் கோப்பு காலியாக உள்ளது.",
     maxSize: "கோப்பின் அளவு 10 MB அல்லது அதற்கும் குறைவாக இருக்க வேண்டும்.",
     maxFiles: "அதிகபட்சம் 5 ஆவணங்களைப் பதிவேற்றலாம்.",
@@ -155,7 +162,7 @@ const translations = {
     image: "చిత్రం",
     preview: "ప్రివ్యూ",
     close: "ప్రివ్యూను మూసివేయండి",
-    onlyAllowed: "PDF, JPG మరియు PNG ఫైళ్లు మాత్రమే అనుమతించబడతాయి.",
+    onlyAllowed: "మద్దతు ఉన్న వైద్య పత్రాలు మాత్రమే అనుమతించబడతాయి.",
     empty: "ఈ ఫైల్ ఖాళీగా ఉంది.",
     maxSize: "ఫైల్ పరిమాణం 10 MB లేదా అంతకంటే తక్కువగా ఉండాలి.",
     maxFiles: "మీరు గరిష్టంగా 5 పత్రాలను అప్‌లోడ్ చేయవచ్చు.",
@@ -176,7 +183,7 @@ const translations = {
     image: "ಚಿತ್ರ",
     preview: "ಮುನ್ನೋಟ",
     close: "ಮುನ್ನೋಟವನ್ನು ಮುಚ್ಚಿ",
-    onlyAllowed: "PDF, JPG ಮತ್ತು PNG ಫೈಲ್‌ಗಳನ್ನು ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ.",
+    onlyAllowed: "ಬೆಂಬಲಿತ ವೈದ್ಯಕೀಯ ದಾಖಲೆಗಳನ್ನು ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ.",
     empty: "ಈ ಫೈಲ್ ಖಾಲಿಯಾಗಿದೆ.",
     maxSize: "ಫೈಲ್ ಗಾತ್ರ 10 MB ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಇರಬೇಕು.",
     maxFiles: "ನೀವು ಗರಿಷ್ಠ 5 ದಾಖಲೆಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬಹುದು.",
@@ -197,7 +204,7 @@ const translations = {
     image: "ചിത്രം",
     preview: "പ്രിവ്യൂ",
     close: "പ്രിവ്യൂ അടയ്ക്കുക",
-    onlyAllowed: "PDF, JPG, PNG ഫയലുകൾ മാത്രമേ അനുവദിക്കൂ.",
+    onlyAllowed: "പിന്തുണയ്ക്കുന്ന മെഡിക്കൽ രേഖകൾ മാത്രമേ അനുവദിക്കൂ.",
     empty: "ഈ ഫയൽ ശൂന്യമാണ്.",
     maxSize: "ഫയലിന്റെ വലുപ്പം 10 MB അല്ലെങ്കിൽ അതിൽ കുറവായിരിക്കണം.",
     maxFiles: "നിങ്ങൾക്ക് പരമാവധി 5 രേഖകൾ അപ്‌ലോഡ് ചെയ്യാം.",
@@ -218,7 +225,7 @@ const translations = {
     image: "ਤਸਵੀਰ",
     preview: "ਝਲਕ",
     close: "ਝਲਕ ਬੰਦ ਕਰੋ",
-    onlyAllowed: "ਸਿਰਫ਼ PDF, JPG ਅਤੇ PNG ਫਾਈਲਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ।",
+    onlyAllowed: "ਸਿਰਫ਼ ਸਮਰਥਿਤ ਮੈਡੀਕਲ ਦਸਤਾਵੇਜ਼ਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ।",
     empty: "ਇਹ ਫਾਈਲ ਖਾਲੀ ਹੈ।",
     maxSize: "ਫਾਈਲ ਦਾ ਆਕਾਰ 10 MB ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     maxFiles: "ਤੁਸੀਂ ਵੱਧ ਤੋਂ ਵੱਧ 5 ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰ ਸਕਦੇ ਹੋ।",
@@ -239,6 +246,22 @@ function isImage(file) {
   return ["jpg", "jpeg", "png"].includes(
     getFileExtension(file.name)
   );
+}
+
+function isDicom(file) {
+  return getFileExtension(file.name) === "dcm";
+}
+
+function isDicomZip(file) {
+  return getFileExtension(file.name) === "zip";
+}
+
+function getFileTypeLabel(file, t) {
+  if (isPdf(file)) return t.pdf;
+  if (isImage(file)) return t.image;
+  if (isDicom(file)) return "DICOM scan";
+  if (isDicomZip(file)) return "DICOM Series (ZIP)";
+  return "Document";
 }
 
 function formatFileSize(bytes) {
@@ -262,10 +285,9 @@ export default function MedicalDocumentUpload({
   const [previewUrl, setPreviewUrl] = useState("");
 
   const t = translations[language] || translations.en;
-console.log("DOCUMENT UPLOAD LANGUAGE:", language);
-  // Create and clean up the preview URL.
+
   useEffect(() => {
-    if (!previewFile) {
+    if (!previewFile || (!isImage(previewFile) && !isPdf(previewFile))) {
       setPreviewUrl("");
       return;
     }
@@ -299,7 +321,9 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        errors.push(`${file.name}: ${t.maxSize}`);
+        errors.push(
+          `${file.name}: File size must be 100 MB or smaller.`
+        );
         continue;
       }
 
@@ -367,6 +391,10 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
     setPreviewFile(file);
   }
 
+  const formatsText = t.formats
+    .replaceAll("10 MB", "100 MB")
+    .replace("PDF, JPG, PNG", "PDF, JPG, PNG, DICOM (.dcm), ZIP (.zip)");
+
   return (
     <div className="mt-6 rounded-xl border border-[#DCE5DC] bg-[#F8FAF6] p-5 sm:p-6">
 
@@ -419,7 +447,7 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
         <input
           ref={inputRef}
           type="file"
-          accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+          accept=".pdf,.jpg,.jpeg,.png,.dcm,.zip,application/pdf,image/jpeg,image/png,application/dicom,application/zip,application/x-zip-compressed"
           multiple
           className="hidden"
           onChange={(event) => addFiles(event.target.files)}
@@ -435,7 +463,11 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
         </button>
 
         <p className="mt-3 text-xs text-gray-400">
-          {t.formats}
+          {formatsText}
+        </p>
+
+        <p className="mt-1 text-xs text-gray-400">
+          DICOM files can be viewed by your doctor in the medical scan viewer.
         </p>
       </div>
 
@@ -497,7 +529,7 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
                   </p>
 
                   <p className="mt-1 text-xs text-gray-500">
-                    {isPdf(file) ? t.pdf : t.image} ·{" "}
+                    {getFileTypeLabel(file, t)} ·{" "}
                     {formatFileSize(file.size)}
                   </p>
                 </div>
@@ -530,7 +562,7 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
       </div>
 
       {/* Document preview modal */}
-      {previewFile && previewUrl && (
+      {previewFile && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
           onClick={() => setPreviewFile(null)}
@@ -555,7 +587,7 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
               </button>
             </div>
 
-            {isImage(previewFile) ? (
+            {isImage(previewFile) && previewUrl ? (
               <div className="flex flex-1 items-center justify-center overflow-auto bg-gray-100 p-3">
                 <img
                   src={previewUrl}
@@ -563,13 +595,35 @@ console.log("DOCUMENT UPLOAD LANGUAGE:", language);
                   className="max-h-[75vh] max-w-full object-contain"
                 />
               </div>
-            ) : (
+            ) : isPdf(previewFile) && previewUrl ? (
               <iframe
                 src={previewUrl}
                 title={`${t.preview} ${previewFile.name}`}
                 className="h-[75vh] w-full"
               />
-            )}
+            ) : isDicom(previewFile) || isDicomZip(previewFile) ? (
+              <div className="flex flex-col items-center justify-center gap-3 bg-[#F8FAF6] px-6 py-16 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E0EEE7] text-[#326F61]">
+                  <FileCheck2 size={32} />
+                </div>
+
+                <h3 className="font-semibold text-[#214D43]">
+                  {isDicom(previewFile)
+                    ? "DICOM medical scan"
+                    : "DICOM image series"}
+                </h3>
+
+                <p className="max-w-md text-sm leading-6 text-gray-600">
+                  {isDicom(previewFile)
+                    ? "This is a DICOM medical imaging file. It will be available to your doctor in the interactive DICOM viewer."
+                    : "This ZIP file may contain a complete DICOM scan series. Your doctor can open it in the interactive DICOM viewer."}
+                </p>
+
+                <p className="text-xs text-gray-400">
+                  {formatFileSize(previewFile.size)}
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
       )}
